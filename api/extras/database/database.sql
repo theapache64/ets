@@ -6,6 +6,7 @@ USE ets;
 CREATE TABLE companies (
   id         INT         NOT NULL AUTO_INCREMENT,
   name       VARCHAR(20) NOT NULL,
+  code       VARCHAR(20) NOT NULL,
   username   VARCHAR(20) NOT NULL,
   password   VARCHAR(20) NOT NULL,
   is_active  TINYINT(4)  NOT NULL DEFAULT 1,
