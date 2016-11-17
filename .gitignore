@@ -1,3 +1,11 @@
+api/.idea/workspace.xml
+api/.idea/tasks.xml
+api/.idea/dataSources.local.xml
+api/.idea/dataSources.local.ids
+api/.idea/dataSources.xml
+
+out
+
 *.class
 
 # Mobile Tools for Java (J2ME)
