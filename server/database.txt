@@ -1,0 +1,8 @@
+Database name : ets
+===================
+
+companies : id , username , password , name , created_at
+employees : id, api_key, company_id, fcm_id, name, imei, created_at
+location_histories : id, employee_id, lat, lon, created_at
+
+
