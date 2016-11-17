@@ -7,6 +7,9 @@
         <element id="directory" name="classes">
           <element id="module-output" name="ets_api" />
         </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="json" />
+        </element>
       </element>
     </root>
   </artifact>
