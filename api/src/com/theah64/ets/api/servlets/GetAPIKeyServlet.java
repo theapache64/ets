@@ -1,9 +1,13 @@
 package com.theah64.ets.api.servlets;
 
+import com.theah64.ets.api.database.tables.BaseTable;
 import com.theah64.ets.api.database.tables.Companies;
 import com.theah64.ets.api.database.tables.Employees;
 import com.theah64.ets.api.models.Employee;
+import com.theah64.ets.api.utils.APIResponse;
+import com.theah64.ets.api.utils.RandomString;
 import com.theah64.ets.api.utils.Request;
+import org.json.JSONException;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -18,6 +22,7 @@ import javax.servlet.annotation.WebServlet;
 public class GetAPIKeyServlet extends AdvancedBaseServlet {
 
     private static final String KEY_COMPANY_CODE = "company_code";
+    private static final int API_KEY_LENGTH = 10;
 
     @Override
     protected boolean isSecureServlet() {
@@ -26,23 +31,41 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
 
     @Override
     protected String[] getRequiredParameters() {
-        return new String[]{KEY_COMPANY_CODE, Employees.COLUMN_NAME, Employees.COLUMN_IMEI, Employees.COLUMN_FCM_ID};
+        return new String[]{KEY_COMPANY_CODE, Employees.COLUMN_NAME, Employees.COLUMN_DEVICE_HASH, Employees.COLUMN_IMEI, Employees.COLUMN_FCM_ID};
     }
 
+
     @Override
-    protected void doAdvancedPost() throws Exception {
+    protected void doAdvancedPost() throws Request.RequestException, BaseTable.InsertFailedException, JSONException {
 
         final String companyCode = getStringParameter(KEY_COMPANY_CODE);
         final boolean isCompanyExists = Companies.getInstance().isExist(Companies.COLUMN_CODE, companyCode, Companies.COLUMN_IS_ACTIVE, Companies.TRUE);
 
         if (isCompanyExists) {
 
-            final String imei = getStringParameter(Employees.COLUMN_IMEI);
-            final boolean isEmpExists = Employees.getInstance().isExist(Employees.COLUMN_IMEI, imei, Employees.COLUMN_IS_ACTIVE, Employees.TRUE);
-            if(isEmpExists){
+            final String deviceHash = getStringParameter(Employees.COLUMN_DEVICE_HASH);
+            final String fcmId = getStringParameter(Employees.COLUMN_FCM_ID);
 
+            final Employees empTable = Employees.getInstance();
+            Employee emp = empTable.get(Employees.COLUMN_DEVICE_HASH, deviceHash, Employees.COLUMN_IS_ACTIVE, Employees.TRUE);
+
+            if (emp != null) {
+                //EMP exist.
+                //Updating fcm id
+
+                empTable.update(Employees.COLUMN_ID, emp.getId(), Employees.COLUMN_FCM_ID, fcmId);
+            } else {
+                //EMP doesn't exist. so create new one.
+                final String name = getStringParameter(Employees.COLUMN_NAME);
+                final String imei = getStringParameter(Employees.COLUMN_IMEI);
+
+                final String apiKey = RandomString.getNewApiKey(API_KEY_LENGTH);
+                emp = new Employee(null, name, imei, deviceHash, fcmId, apiKey);
+                empTable.add(emp);
             }
 
+            //Finally showing api key
+            getWriter().write(new APIResponse("Employee verified", Employees.COLUMN_API_KEY, emp.getApiKey()).getResponse());
 
         } else {
             throw new Request.RequestException("Company doesn't exist : " + companyCode);

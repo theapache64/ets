@@ -15,6 +15,8 @@ CREATE TABLE companies (
   UNIQUE KEY (username)
 );
 
+INSERT INTO companies (name,code,username,password) VALUES ('XYZ','xyzComp','xyzUser','xyzPassword');
+
 CREATE TABLE employees (
   id          INT         NOT NULL AUTO_INCREMENT,
   company_id  INT         NOT NULL,

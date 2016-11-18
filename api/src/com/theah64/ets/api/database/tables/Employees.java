@@ -11,6 +11,7 @@ public class Employees extends BaseTable<Employee> {
     public static final String COLUMN_API_KEY = "api_key";
     public static final String COLUMN_IMEI = "imei";
     public static final String COLUMN_FCM_ID = "fcm_id";
+    public static final String COLUMN_DEVICE_HASH = "device_hash";
 
     private Employees() {
         super("employee");
@@ -19,4 +20,5 @@ public class Employees extends BaseTable<Employee> {
     public static Employees getInstance() {
         return instance;
     }
+
 }

@@ -52,12 +52,14 @@ public class BaseTable<T> {
         throw new IllegalArgumentException(ERROR_MESSAGE_UNDEFINED_METHOD);
     }
 
-    public boolean add(T newInstance) {
+    public void add(T newInstance) throws InsertFailedException {
         throw new IllegalArgumentException(ERROR_MESSAGE_UNDEFINED_METHOD);
     }
 
-    public void addv2(T newInstance) throws RuntimeException {
-        throw new IllegalArgumentException(ERROR_MESSAGE_UNDEFINED_METHOD);
+    public static class InsertFailedException extends Exception {
+        public InsertFailedException(String message) {
+            super(message);
+        }
     }
 
 

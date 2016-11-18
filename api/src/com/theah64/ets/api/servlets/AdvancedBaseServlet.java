@@ -1,9 +1,11 @@
 package com.theah64.ets.api.servlets;
 
 
+import com.theah64.ets.api.database.tables.BaseTable;
 import com.theah64.ets.api.utils.APIResponse;
 import com.theah64.ets.api.utils.HeaderSecurity;
 import com.theah64.ets.api.utils.Request;
+import org.json.JSONException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -58,7 +60,7 @@ public abstract class AdvancedBaseServlet extends HttpServlet {
 
     protected abstract String[] getRequiredParameters();
 
-    protected abstract void doAdvancedPost() throws Exception;
+    protected abstract void doAdvancedPost() throws Request.RequestException, BaseTable.InsertFailedException, JSONException;
 
 
     public HeaderSecurity getHeaderSecurity() {
@@ -80,6 +82,10 @@ public abstract class AdvancedBaseServlet extends HttpServlet {
     private static final String ERROR_POST_NOT_SUPPORTED = "POST method not supported";
     public static final String VERSION_CODE = "/v1";
 
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        setGETMethodNotSupported(resp);
+    }
 
     protected static void setGETMethodNotSupported(HttpServletResponse response) throws IOException {
         notSupported(ERROR_GET_NOT_SUPPORTED, response);
