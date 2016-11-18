@@ -13,15 +13,16 @@ package com.theah64.ets.api.models;
  * created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
  */
 public class Employee {
-    private final String id,name,imei,deviceHash,fcmId,apiKey;
+    private final String id, name, imei, deviceHash, fcmId, apiKey, companyId;
 
-    public Employee(String id, String name, String imei, String deviceHash, String fcmId, String apiKey) {
+    public Employee(String id, String name, String imei, String deviceHash, String fcmId, String apiKey, String companyId) {
         this.id = id;
         this.name = name;
         this.imei = imei;
         this.deviceHash = deviceHash;
         this.fcmId = fcmId;
         this.apiKey = apiKey;
+        this.companyId = companyId;
     }
 
     public String getId() {
@@ -46,5 +47,9 @@ public class Employee {
 
     public String getApiKey() {
         return apiKey;
+    }
+
+    public String getCompanyId() {
+        return companyId;
     }
 }

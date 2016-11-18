@@ -39,9 +39,9 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
     protected void doAdvancedPost() throws Request.RequestException, BaseTable.InsertFailedException, JSONException {
 
         final String companyCode = getStringParameter(KEY_COMPANY_CODE);
-        final boolean isCompanyExists = Companies.getInstance().isExist(Companies.COLUMN_CODE, companyCode, Companies.COLUMN_IS_ACTIVE, Companies.TRUE);
+        final String companyId = Companies.getInstance().get(Companies.COLUMN_CODE, companyCode, Companies.COLUMN_ID, true);
 
-        if (isCompanyExists) {
+        if (companyId != null) {
 
             final String deviceHash = getStringParameter(Employees.COLUMN_DEVICE_HASH);
             final String fcmId = getStringParameter(Employees.COLUMN_FCM_ID);
@@ -60,7 +60,7 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
                 final String imei = getStringParameter(Employees.COLUMN_IMEI);
 
                 final String apiKey = RandomString.getNewApiKey(API_KEY_LENGTH);
-                emp = new Employee(null, name, imei, deviceHash, fcmId, apiKey);
+                emp = new Employee(null, name, imei, deviceHash, fcmId, apiKey, companyId);
                 empTable.add(emp);
             }
 

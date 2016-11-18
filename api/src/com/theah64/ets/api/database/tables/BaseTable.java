@@ -56,7 +56,7 @@ public class BaseTable<T> {
         throw new IllegalArgumentException(ERROR_MESSAGE_UNDEFINED_METHOD);
     }
 
-    public static class InsertFailedException extends Exception {
+    public static class InsertFailedException extends SQLException {
         public InsertFailedException(String message) {
             super(message);
         }
@@ -115,9 +115,9 @@ public class BaseTable<T> {
     }
 
 
-    public String get(String byColumn, String byValue, String columnToReturn) {
+    public String get(String byColumn, String byValue, String columnToReturn, final boolean isActive) {
 
-        final String query = String.format("SELECT %s FROM %s WHERE %s = ? ORDER BY id DESC LIMIT 1", columnToReturn, tableName, byColumn);
+        final String query = String.format("SELECT %s FROM %s WHERE %s = ? %s ORDER BY id DESC LIMIT 1", columnToReturn, tableName, byColumn, isActive ? " AND is_active = 1 " : "");
 
         String resultValue = null;
         final java.sql.Connection con = Connection.getConnection();
