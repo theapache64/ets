@@ -96,4 +96,10 @@ public class Request {
         final String value = getStringParameter(key);
         return value != null ? Long.parseLong(value) : -1;
     }
+
+    public static class RequestException extends Exception{
+        public RequestException(String message) {
+            super(message);
+        }
+    }
 }

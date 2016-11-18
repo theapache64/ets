@@ -16,14 +16,15 @@ CREATE TABLE companies (
 );
 
 CREATE TABLE employees (
-  id         INT         NOT NULL AUTO_INCREMENT,
-  company_id INT         NOT NULL,
-  name       VARCHAR(20) NOT NULL,
-  imei       VARCHAR(20) NOT NULL,
-  fcm_id     TEXT        NOT NULL,
-  api_key    VARCHAR(20) NOT NULL,
-  is_active  TINYINT(4)  NOT NULL DEFAULT 1,
-  created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  id          INT         NOT NULL AUTO_INCREMENT,
+  company_id  INT         NOT NULL,
+  name        VARCHAR(20) NOT NULL,
+  imei        VARCHAR(20) NOT NULL,
+  device_hash TEXT        NOT NULL,
+  fcm_id      TEXT        NOT NULL,
+  api_key     VARCHAR(20) NOT NULL,
+  is_active   TINYINT(4)  NOT NULL DEFAULT 1,
+  created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY (api_key),
   FOREIGN KEY (company_id) REFERENCES companies (id)
