@@ -7,13 +7,11 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
-public class CommandReceiverService extends FirebaseMessagingService {
+public class LocationRequestReceiverService extends FirebaseMessagingService {
 
-    private static final String X = CommandReceiverService.class.getSimpleName();
+    private static final String X = LocationRequestReceiverService.class.getSimpleName();
     private static final String KEY_TYPE = "type";
     private static final String TYPE_LOCATION_REQUEST = "location_request";
-    private static final String KEY_DATA = "data";
-    private static final String KEY_TYPE_DATA = "type_data";
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {

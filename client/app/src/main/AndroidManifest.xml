@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".services.firebase.CommandReceiverService">
+        <service android:name=".services.firebase.LocationRequestReceiverService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

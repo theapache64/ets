@@ -135,7 +135,7 @@ public class APIRequestGateway {
         }
 
         //Attaching them with the request
-        final Request inRequest = new APIRequestBuilder("/in")
+        final Request inRequest = new APIRequestBuilder("/get_api_key")
                 .addParam("company_code", App.getCompanyCode())
                 .addParamIfNotNull("name", name)
                 .addParam("device_hash", deviceHash)

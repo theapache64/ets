@@ -31,7 +31,7 @@ public class InstanceIdService extends FirebaseInstanceIdService {
 
         final SharedPreferences.Editor prefEditor = PrefUtils.getInstance(this).getEditor();
         prefEditor.putString(Employee.KEY_FCM_ID, newFcmId);
-        prefEditor.putBoolean(PrefUtils.KEY_IS_FCM_SYNCED, false);
+        prefEditor.putBoolean(Employee.KEY_IS_FCM_SYNCED, false);
         prefEditor.commit();
 
         new APIRequestGateway(this, new APIRequestGateway.APIRequestGatewayCallback() {
