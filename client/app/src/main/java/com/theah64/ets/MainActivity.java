@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import com.theah64.ets.asyncs.FCMSynchronizer;
 import com.theah64.ets.model.Employee;
-import com.theah64.ets.services.firebase.InstanceIdService;
 import com.theah64.ets.utils.APIRequestGateway;
 import com.theah64.ets.utils.CommonUtils;
 import com.theah64.ets.utils.GPSUtils;

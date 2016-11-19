@@ -13,15 +13,6 @@ import com.theah64.ets.model.Employee;
 import com.theah64.ets.utils.APIRequestGateway;
 import com.theah64.ets.utils.PrefUtils;
 
-import org.json.JSONException;
-
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Request;
-import okhttp3.Response;
-
 public class InstanceIdService extends FirebaseInstanceIdService {
 
     private static final String X = InstanceIdService.class.getSimpleName();
