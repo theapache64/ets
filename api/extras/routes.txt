@@ -1,4 +1,4 @@
-routes to be prepared
+routes prepared
 =====================
 
 route: /get_api_key
@@ -15,3 +15,14 @@ route: /update_fcm
 -------------------
 on_req: api_key, fcm_id
 on_resp: status
+
+route: /request_location
+---------------------
+on_req: company_code, emp_codes
+on_resp : status 
+
+NOTE: api_key must be passed through header with key 'Authorization'.
+
+routes to be prepared
+=====================
+ NULL
