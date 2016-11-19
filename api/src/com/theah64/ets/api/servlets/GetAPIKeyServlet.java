@@ -39,6 +39,9 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
     @Override
     protected void doAdvancedPost() throws Request.RequestException, BaseTable.InsertFailedException, JSONException, BaseTable.UpdateFailedException {
 
+        System.out.println("----------------------");
+        System.out.println("New api request received....");
+
         final String companyCode = getStringParameter(KEY_COMPANY_CODE);
         final String companyId = Companies.getInstance().get(Companies.COLUMN_CODE, companyCode, Companies.COLUMN_ID, true);
 
@@ -67,6 +70,8 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
                 emp = new Employee(null, name, imei, deviceHash, fcmId, apiKey, companyId, empCode);
                 empTable.add(emp);
             }
+
+            System.out.println("Employee: " + emp);
 
             //Finally showing api key
             getWriter().write(new APIResponse("Verified employee", Employees.COLUMN_API_KEY, emp.getApiKey()).getResponse());

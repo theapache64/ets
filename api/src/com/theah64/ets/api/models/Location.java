@@ -23,4 +23,13 @@ public class Location {
     public String getLon() {
         return lon;
     }
+
+    @Override
+    public String toString() {
+        return "Location{" +
+                "empId='" + empId + '\'' +
+                ", lat='" + lat + '\'' +
+                ", lon='" + lon + '\'' +
+                '}';
+    }
 }

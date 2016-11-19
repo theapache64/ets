@@ -39,7 +39,7 @@ public class RequestLocationServlet extends AdvancedBaseServlet {
                 final boolean isSent = FCMUtils.sendLocationRequest(jaFcmIds);
 
                 if (isSent) {
-                    final String status = String.format("emp_codes received : %d, request sent to: %d", empCodes.length(), jaFcmIds.length());
+                    final String status = String.format("emp_codes received : %d, request sent to: %d", jaEmpCodes.length(), jaFcmIds.length());
                     getWriter().write(new APIResponse("Location request sent", "status", status).getResponse());
                 } else {
                     throw new Request.RequestException("Failed to send location request");
