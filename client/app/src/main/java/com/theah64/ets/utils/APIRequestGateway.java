@@ -29,7 +29,6 @@ public class APIRequestGateway {
     private static final String KEY_API_KEY = "api_key";
 
     private static final String X = APIRequestGateway.class.getSimpleName();
-    private final Activity activity;
     private TelephonyManager tm;
 
     private static String getDeviceName() {
@@ -96,19 +95,10 @@ public class APIRequestGateway {
     @NonNull
     private final APIRequestGatewayCallback callback;
 
-    private APIRequestGateway(Context context, final Activity activity, @NonNull APIRequestGatewayCallback callback) {
+    private APIRequestGateway(Context context, @NonNull APIRequestGatewayCallback callback) {
         this.context = context;
-        this.activity = activity;
         this.callback = callback;
         execute();
-    }
-
-    public APIRequestGateway(final Activity activity, APIRequestGatewayCallback callback) {
-        this(activity.getBaseContext(), activity, callback);
-    }
-
-    public APIRequestGateway(Context context, APIRequestGatewayCallback callback) {
-        this(context, null, callback);
     }
 
 
@@ -134,6 +124,8 @@ public class APIRequestGateway {
             fcmId = prefUtils.getString(Employee.KEY_FCM_ID);
         }
 
+        final String finalFcmId = fcmId;
+
         //Attaching them with the request
         final Request inRequest = new APIRequestBuilder("/get_api_key")
                 .addParam("company_code", App.getCompanyCode())
@@ -149,16 +141,7 @@ public class APIRequestGateway {
             @Override
             public void onFailure(Call call, final IOException e) {
                 e.printStackTrace();
-                if (activity != null) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onFailed(e.getMessage());
-                        }
-                    });
-                } else {
-                    callback.onFailed(e.getMessage());
-                }
+                callback.onFailed(e.getMessage());
             }
 
             @Override
@@ -169,34 +152,24 @@ public class APIRequestGateway {
                     final APIResponse inResp = new APIResponse(OkHttpUtils.logAndGetStringBody(response));
                     final String apiKey = inResp.getJSONObjectData().getString(KEY_API_KEY);
 
+
                     //Saving in preference
                     final SharedPreferences.Editor editor = prefUtils.getEditor();
-                    editor.putString(KEY_API_KEY, apiKey).commit();
+                    editor.putString(KEY_API_KEY, apiKey);
 
-                    if (activity != null) {
-
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onReadyToRequest(apiKey);
-                            }
-                        });
-
-                    } else {
-                        callback.onReadyToRequest(apiKey);
+                    if (finalFcmId != null) {
+                        editor.putBoolean(Employee.KEY_IS_FCM_SYNCED, true);
                     }
+
+                    editor.commit();
+
+                    callback.onReadyToRequest(apiKey);
+
                 } catch (JSONException | APIResponse.APIException e) {
                     e.printStackTrace();
-                    if (activity != null) {
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onFailed(e.getMessage());
-                            }
-                        });
-                    } else {
-                        callback.onFailed(e.getMessage());
-                    }
+
+                    callback.onFailed(e.getMessage());
+
                 }
             }
         });
@@ -218,16 +191,7 @@ public class APIRequestGateway {
 
                 Log.d(X, "hasApiKey " + apiKey);
 
-                if (activity != null) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onReadyToRequest(apiKey);
-                        }
-                    });
-                } else {
-                    callback.onReadyToRequest(apiKey);
-                }
+                callback.onReadyToRequest(apiKey);
 
             } else {
 
@@ -238,18 +202,7 @@ public class APIRequestGateway {
             }
 
         } else {
-
-            if (activity != null) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onFailed("No network!");
-                    }
-                });
-            } else {
-                callback.onFailed("No network!");
-            }
-
+            callback.onFailed("No network!");
             Log.e(X, "Doesn't have APIKEY and no network!");
 
         }

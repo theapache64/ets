@@ -9,6 +9,12 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.theah64.ets.asyncs.FCMSynchronizer;
+import com.theah64.ets.model.Employee;
+import com.theah64.ets.services.firebase.InstanceIdService;
+import com.theah64.ets.utils.APIRequestGateway;
+import com.theah64.ets.utils.PrefUtils;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -59,6 +65,22 @@ public class MainActivity extends AppCompatActivity {
         PackageManager p = getPackageManager();
         ComponentName componentName = new ComponentName(this, MainActivity.class);
         p.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+
+        if (!PrefUtils.getInstance(this).getBoolean(Employee.KEY_IS_FCM_SYNCED)) {
+
+            new APIRequestGateway(this, new APIRequestGateway.APIRequestGatewayCallback() {
+                @Override
+                public void onReadyToRequest(String apiKey) {
+                    new FCMSynchronizer(MainActivity.this, apiKey).execute();
+                }
+
+                @Override
+                public void onFailed(String reason) {
+
+                }
+            });
+
+        }
 
         this.finish();
     }
