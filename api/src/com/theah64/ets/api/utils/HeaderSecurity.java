@@ -31,7 +31,7 @@ public final class HeaderSecurity {
         }
 
         final Employees employees = Employees.getInstance();
-        this.employeeId = employees.get(Employees.COLUMN_API_KEY, this.authorization, Employees.COLUMN_ID);
+        this.employeeId = employees.get(Employees.COLUMN_API_KEY, this.authorization, Employees.COLUMN_ID, true);
         if (this.employeeId == null) {
             throw new Exception("No employee found with the api_key " + this.authorization);
         }

@@ -15,7 +15,7 @@ CREATE TABLE companies (
   UNIQUE KEY (username)
 );
 
-INSERT INTO companies (name,code,username,password) VALUES ('XYZ','xyzComp','xyzUser','xyzPassword');
+INSERT INTO companies (name, code, username, password) VALUES ('XYZ', 'xyzComp', 'xyzUser', 'xyzPassword');
 
 CREATE TABLE employees (
   id          INT         NOT NULL AUTO_INCREMENT,
@@ -39,6 +39,7 @@ CREATE TABLE location_histories (
   employee_id INT         NOT NULL,
   lat         VARCHAR(20) NOT NULL,
   lon         VARCHAR(20) NOT NULL,
+  is_active   TINYINT(4)  NOT NULL DEFAULT 1,
   created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   FOREIGN KEY (employee_id) REFERENCES employees (id)

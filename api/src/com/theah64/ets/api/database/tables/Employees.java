@@ -75,4 +75,9 @@ public class Employees extends BaseTable<Employee> {
             throw new InsertFailedException("Failed to add new employee");
         }
     }
+
+    @Override
+    public Employee get(String column1, String value1, String column2, String value2) {
+        final String query = "SELECT "
+    }
 }
