@@ -23,6 +23,7 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
 
     private static final String KEY_COMPANY_CODE = "company_code";
     private static final int API_KEY_LENGTH = 10;
+    private static final int EMP_CODE_LENGTH = 10;
 
     @Override
     protected boolean isSecureServlet() {
@@ -61,7 +62,9 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
                 final String imei = getStringParameter(Employees.COLUMN_IMEI);
 
                 final String apiKey = RandomString.getNewApiKey(API_KEY_LENGTH);
-                emp = new Employee(null, name, imei, deviceHash, fcmId, apiKey, companyId);
+                final String empCode = RandomString.getRandomString(EMP_CODE_LENGTH);
+
+                emp = new Employee(null, name, imei, deviceHash, fcmId, apiKey, companyId, empCode);
                 empTable.add(emp);
             }
 

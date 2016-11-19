@@ -19,6 +19,7 @@ INSERT INTO companies (name, code, username, password) VALUES ('XYZ', 'xyzComp',
 
 CREATE TABLE employees (
   id          INT         NOT NULL AUTO_INCREMENT,
+  code        VARCHAR(20) NOT NULL,
   company_id  INT         NOT NULL,
   name        VARCHAR(20) NOT NULL,
   imei        VARCHAR(20) NOT NULL,
@@ -29,6 +30,8 @@ CREATE TABLE employees (
   created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY (api_key),
+  UNIQUE KEY (code),
+  UNIQUE KEY (imei),
   FOREIGN KEY (company_id) REFERENCES companies (id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
