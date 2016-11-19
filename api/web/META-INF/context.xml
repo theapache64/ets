@@ -23,7 +23,7 @@
             url="jdbc:mysql://localhost:3306/ets?allowMultiQueries=true"
             />
 
-    <Resource
+    <!--<Resource
             name="jdbc/etsRemote"
             auth="Container"
             type="javax.sql.DataSource"
@@ -43,6 +43,6 @@
             removeAbandonedTimeout="233"
             driverClassName="com.mysql.jdbc.Driver"
             url="jdbc:mysql://35.161.57.139:3306/ets?allowMultiQueries=true"
-            />
+            />-->
 
 </Context>

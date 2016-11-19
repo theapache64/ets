@@ -36,7 +36,7 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
 
 
     @Override
-    protected void doAdvancedPost() throws Request.RequestException, BaseTable.InsertFailedException, JSONException {
+    protected void doAdvancedPost() throws Request.RequestException, BaseTable.InsertFailedException, JSONException, BaseTable.UpdateFailedException {
 
         final String companyCode = getStringParameter(KEY_COMPANY_CODE);
         final String companyId = Companies.getInstance().get(Companies.COLUMN_CODE, companyCode, Companies.COLUMN_ID, true);
@@ -49,11 +49,12 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
             final Employees empTable = Employees.getInstance();
             Employee emp = empTable.get(Employees.COLUMN_DEVICE_HASH, deviceHash, Employees.COLUMN_IS_ACTIVE, Employees.TRUE);
 
-            if (emp != null) {
+            if (emp != null && !emp.getFcmId().equals(fcmId)) {
                 //EMP exist.
-                //Updating fcm id
 
+                //Updating fcm id
                 empTable.update(Employees.COLUMN_ID, emp.getId(), Employees.COLUMN_FCM_ID, fcmId);
+
             } else {
                 //EMP doesn't exist. so create new one.
                 final String name = getStringParameter(Employees.COLUMN_NAME);

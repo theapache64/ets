@@ -62,8 +62,14 @@ public class BaseTable<T> {
         }
     }
 
+    public static class UpdateFailedException extends SQLException {
+        public UpdateFailedException(String message) {
+            super(message);
+        }
+    }
 
-    public boolean update(String whereColumn, String whereColumnValue, String updateColumn, String newUpdateColumnValue) {
+
+    public void update(String whereColumn, String whereColumnValue, String updateColumn, String newUpdateColumnValue) throws UpdateFailedException {
         boolean isEdited = false;
         final String query = String.format("UPDATE %s SET %s = ? WHERE %s = ?;", tableName, updateColumn, whereColumn);
         final java.sql.Connection con = Connection.getConnection();
@@ -85,7 +91,10 @@ public class BaseTable<T> {
                 e.printStackTrace();
             }
         }
-        return isEdited;
+
+        if (!isEdited) {
+            throw new UpdateFailedException("Failed to update " + updateColumn);
+        }
 
     }
 
