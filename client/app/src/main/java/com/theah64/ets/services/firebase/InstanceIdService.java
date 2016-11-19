@@ -1,6 +1,9 @@
 package com.theah64.ets.services.firebase;
 
+import android.Manifest;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -34,6 +37,21 @@ public class InstanceIdService extends FirebaseInstanceIdService {
         prefEditor.putBoolean(Employee.KEY_IS_FCM_SYNCED, false);
         prefEditor.commit();
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                doNormalWork();
+            } else {
+                Log.e(X, "Permission not yet granted");
+            }
+
+        } else {
+            doNormalWork();
+        }
+    }
+
+    private void doNormalWork() {
+
         new APIRequestGateway(this, new APIRequestGateway.APIRequestGatewayCallback() {
             @Override
             public void onReadyToRequest(String apiKey) {
@@ -45,5 +63,6 @@ public class InstanceIdService extends FirebaseInstanceIdService {
 
             }
         });
+
     }
 }

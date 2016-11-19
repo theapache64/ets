@@ -18,10 +18,10 @@ public class APIResponse {
 
         try {
             joMain = new JSONObject(stringResp);
-            this.message = joMain.getString(Xrob.KEY_MESSAGE);
+            this.message = joMain.getString("message");
 
-            if (joMain.getBoolean(Xrob.KEY_ERROR)) {
-                final int errorCode = joMain.getInt(Xrob.KEY_ERROR_CODE);
+            if (joMain.getBoolean("error")) {
+                final int errorCode = joMain.getInt("error_code");
                 throw new APIException(errorCode, message);
             }
 
@@ -34,7 +34,7 @@ public class APIResponse {
     }
 
     JSONObject getJSONObjectData() throws JSONException {
-        return joMain.getJSONObject(Xrob.KEY_DATA);
+        return joMain.getJSONObject("data");
     }
 
 
