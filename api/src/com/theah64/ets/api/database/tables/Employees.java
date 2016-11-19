@@ -4,6 +4,7 @@ import com.theah64.ets.api.database.Connection;
 import com.theah64.ets.api.models.Employee;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -32,7 +33,7 @@ public class Employees extends BaseTable<Employee> {
     public static final String COLUMN_DEVICE_HASH = "device_hash";
 
     private Employees() {
-        super("employee");
+        super("employees");
     }
 
     public static Employees getInstance() {
@@ -78,6 +79,35 @@ public class Employees extends BaseTable<Employee> {
 
     @Override
     public Employee get(String column1, String value1, String column2, String value2) {
-        final String query = "SELECT "
+        Employee emp = null;
+        final String query = String.format("SELECT id, fcm_id, api_key FROM employees WHERE %s = ? AND %s = ?", column1, column2);
+        final java.sql.Connection con = Connection.getConnection();
+        try {
+            final PreparedStatement ps = con.prepareStatement(query);
+
+            ps.setString(1, value1);
+            ps.setString(2, value2);
+
+            final ResultSet rs = ps.executeQuery();
+
+            if (rs.first()) {
+                final String id = rs.getString(COLUMN_ID);
+                final String fcmId = rs.getString(COLUMN_FCM_ID);
+                final String apiKey = rs.getString(COLUMN_API_KEY);
+                emp = new Employee(id, null, null, null, fcmId, apiKey, null);
+            }
+
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return emp;
     }
 }

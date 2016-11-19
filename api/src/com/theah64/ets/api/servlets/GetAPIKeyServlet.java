@@ -65,7 +65,7 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
             }
 
             //Finally showing api key
-            getWriter().write(new APIResponse("Employee verified", Employees.COLUMN_API_KEY, emp.getApiKey()).getResponse());
+            getWriter().write(new APIResponse("Verified employee", Employees.COLUMN_API_KEY, emp.getApiKey()).getResponse());
 
         } else {
             throw new Request.RequestException("Company doesn't exist : " + companyCode);
