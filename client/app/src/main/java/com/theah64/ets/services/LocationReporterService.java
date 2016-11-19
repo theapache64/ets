@@ -34,10 +34,10 @@ import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class LocationReporterService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class LocationReporterService extends Service implements android.location.LocationListener {
 
     private static final String X = LocationReporterService.class.getSimpleName();
-    private GoogleApiClient mGoogleApiClient;
+
 
     public LocationReporterService() {
     }
@@ -45,29 +45,6 @@ public class LocationReporterService extends Service implements GoogleApiClient.
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(X, "Location reporter started...");
-
-        //buildGoogleApiClient();
-        mGoogleApiClient = new
-                GoogleApiClient.Builder(getApplicationContext())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-
-
-        mGoogleApiClient.connect();
-
-        return START_STICKY;
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
 
         Log.d(X, "Google api client connected");
 
@@ -83,41 +60,22 @@ public class LocationReporterService extends Service implements GoogleApiClient.
             doNormalWork();
         }
 
+        return START_STICKY;
     }
 
-    private static final long INTERVAL = 1000 * 10;
-    private static final long FASTEST_INTERVAL = 1000 * 5;
-
+    @Override
+    public IBinder onBind(Intent intent) {
+        // TODO: Return the communication channel to the service.
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 
     @SuppressWarnings("MissingPermission")
     private void doNormalWork() {
-
-        final LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-
-            Log.d(X, "Location requested");
-
-        } else {
-            Log.e(X, "Location provider not enabled");
-        }
+        Log.d(X, "Requesting location");
+        final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, null);
     }
 
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.e(X, "Connection suspended " + i);
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e(X, "Connection failed");
-    }
 
     @Override
     public void onLocationChanged(final Location location) {
@@ -163,9 +121,21 @@ public class LocationReporterService extends Service implements GoogleApiClient.
             Log.e(X, "No network");
         }
 
+    }
 
-        //removeLocationUpdates();
-        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, LocationReporterService.this);
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+        Log.d(X, "GPS enabled");
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+        Log.e(X, "GPS disabled");
     }
 
 
