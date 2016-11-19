@@ -9,6 +9,10 @@ import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.HttpSender;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 
 /**
  * Created by theapache64 on 19/11/16.
@@ -32,8 +36,10 @@ import org.acra.sender.HttpSender;
 )
 public class App extends Application {
 
-    public static final boolean IS_DEBUG_MODE = true;
+    public static final boolean IS_DEBUG_MODE = false;
     private static final String X = App.class.getSimpleName();
+
+    private static String companyCode;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -42,7 +48,10 @@ public class App extends Application {
         ACRA.init(this);
     }
 
-    public static String getCompanyCode() {
-        return "xyzComp";
+    public static String getCompanyCode(final Context context) throws IOException, JSONException {
+        if (companyCode == null) {
+            companyCode = new JSONObject(FileUtils.readTextualAsset(context, "core.json")).getString("company_code");
+        }
+        return companyCode;
     }
 }

@@ -11,6 +11,7 @@ import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.theah64.ets.model.Employee;
 
+import org.acra.ACRA;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -102,7 +103,7 @@ public class APIRequestGateway {
     }
 
 
-    private void register(final Context context) {
+    private void register(final Context context) throws IOException, JSONException {
 
         final ProfileUtils profileUtils = ProfileUtils.getInstance(context);
 
@@ -135,7 +136,7 @@ public class APIRequestGateway {
 
             //Attaching them with the request
             final Request inRequest = new APIRequestBuilder("/get_api_key")
-                    .addParam("company_code", App.getCompanyCode())
+                    .addParam("company_code", App.getCompanyCode(context))
                     .addParamIfNotNull("name", name)
                     .addParam("device_hash", deviceHash)
                     .addParam("imei", imei)
@@ -207,7 +208,13 @@ public class APIRequestGateway {
                 Log.i(X, "Registering victim...");
 
                 //Register victim here
-                register(context);
+                try {
+                    register(context);
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                    Log.e(X, "Failed to signup employee");
+                    ACRA.getErrorReporter().handleException(e);
+                }
             }
 
         } else {
