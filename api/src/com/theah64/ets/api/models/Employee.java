@@ -57,4 +57,18 @@ public class Employee {
     public String getEmpCode() {
         return empCode;
     }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", imei='" + imei + '\'' +
+                ", deviceHash='" + deviceHash + '\'' +
+                ", fcmId='" + fcmId + '\'' +
+                ", apiKey='" + apiKey + '\'' +
+                ", companyId='" + companyId + '\'' +
+                ", empCode='" + empCode + '\'' +
+                '}';
+    }
 }

@@ -24,7 +24,7 @@ public class FCMUtils {
     public static final String TYPE_LOCATION_REQUEST = "location_request";
     public static final String KEY_DATA = "data";
     public static final String KEY_TO = "to";
-    private static final String FCM_NOTIFICATION_KEY = "//TODO: ";
+    private static final String FCM_NOTIFICATION_KEY = "AIzaSyCq_V-Hu0qn4jZhdWosj3j5cRxjTc22R6s";
     private static final String KEY_REG_IDS = "registration_ids";
 
     public static boolean sendLocationRequest(final JSONArray jaFcmIds) {
@@ -47,6 +47,8 @@ public class FCMUtils {
 
     private static boolean sendPayload(String payload) {
 
+        System.out.println("Payload : " + payload);
+
         try {
             final URL url = new URL(FCM_SEND_URL);
             final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -66,6 +68,7 @@ public class FCMUtils {
             while ((line = br.readLine()) != null) {
                 response.append(line).append("\n");
             }
+            System.out.println("Response : " + response);
             br.close();
             final JSONObject joResp = new JSONObject(response.toString());
             final boolean isSent = joResp.getInt("failure") == 0;

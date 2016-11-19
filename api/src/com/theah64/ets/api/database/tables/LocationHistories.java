@@ -25,6 +25,9 @@ public class LocationHistories extends BaseTable<Location> {
 
     @Override
     public void add(Location location) throws InsertFailedException {
+
+        System.out.println("New location : " + location);
+
         boolean isFailed = false;
         final String query = "INSERT INTO location_histories (employee_id, lat, lon) VALUES (?,?,?);";
         final java.sql.Connection con = Connection.getConnection();
