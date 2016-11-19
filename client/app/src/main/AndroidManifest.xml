@@ -4,13 +4,16 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!--To signup-->
+    <!-- To signup -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
-    <!--What? -->
+    <!-- To update fcm -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- What? -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -41,6 +44,21 @@
             </intent-filter>
         </service>
 
+        <receiver
+            android:name=".receivers.NetworkReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter android:priority="9999">
+
+                <!-- TODO Got to fix this warning -->
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".services.LocationReporterService"
+            android:enabled="true"
+            android:exported="false"></service>
     </application>
 
 </manifest>

@@ -42,7 +42,7 @@ public class ProfileUtils {
 
         }
 
-        return null;
+        return "Unknown";
     }
 
 

@@ -1,9 +1,11 @@
 package com.theah64.ets.services.firebase;
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.theah64.ets.services.LocationReporterService;
 
 import java.util.Map;
 
@@ -16,6 +18,7 @@ public class LocationRequestReceiverService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
+        Log.d(X, "FCM sayssss: " + remoteMessage);
         Map<String, String> payload = remoteMessage.getData();
         Log.i(X, "FCM says : " + payload);
 
@@ -25,6 +28,7 @@ public class LocationRequestReceiverService extends FirebaseMessagingService {
 
             if (type.equals(TYPE_LOCATION_REQUEST)) {
                 //TODO: location request received.
+                startService(new Intent(this, LocationReporterService.class));
             } else {
                 //TODO: Manage anything else here.
             }

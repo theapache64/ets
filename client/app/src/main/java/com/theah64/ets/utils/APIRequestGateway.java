@@ -95,7 +95,7 @@ public class APIRequestGateway {
     @NonNull
     private final APIRequestGatewayCallback callback;
 
-    private APIRequestGateway(Context context, @NonNull APIRequestGatewayCallback callback) {
+    public APIRequestGateway(Context context, @NonNull APIRequestGatewayCallback callback) {
         this.context = context;
         this.callback = callback;
         execute();
