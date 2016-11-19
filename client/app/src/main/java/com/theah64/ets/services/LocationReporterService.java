@@ -85,17 +85,22 @@ public class LocationReporterService extends Service implements GoogleApiClient.
 
     }
 
+    private static final long INTERVAL = 1000 * 10;
+    private static final long FASTEST_INTERVAL = 1000 * 5;
+
+
     @SuppressWarnings("MissingPermission")
     private void doNormalWork() {
 
-        final LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        final LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
 
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, this);
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
 
             Log.d(X, "Location requested");
 
@@ -140,8 +145,6 @@ public class LocationReporterService extends Service implements GoogleApiClient.
                         public void onResponse(Call call, Response response) throws IOException {
                             try {
                                 new APIResponse(OkHttpUtils.logAndGetStringBody(response));
-
-
                             } catch (APIResponse.APIException | JSONException e) {
                                 e.printStackTrace();
                             }
