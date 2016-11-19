@@ -26,6 +26,7 @@ public class LocationHistories extends BaseTable<Location> {
     @Override
     public void add(Location location) throws InsertFailedException {
 
+        System.out.println("-------------------");
         System.out.println("New location : " + location);
 
         boolean isFailed = false;

@@ -47,7 +47,6 @@ public class FCMUtils {
 
     private static boolean sendPayload(String payload) {
 
-        System.out.println("Payload : " + payload);
 
         try {
             final URL url = new URL(FCM_SEND_URL);
@@ -68,7 +67,7 @@ public class FCMUtils {
             while ((line = br.readLine()) != null) {
                 response.append(line).append("\n");
             }
-            System.out.println("Response : " + response);
+            
             br.close();
             final JSONObject joResp = new JSONObject(response.toString());
             final boolean isSent = joResp.getInt("failure") == 0;
