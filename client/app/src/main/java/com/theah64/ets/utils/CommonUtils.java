@@ -8,7 +8,7 @@ import android.webkit.MimeTypeMap;
  */
 public class CommonUtils {
 
-    static boolean isSupport(final int apiLevel) {
+    public static boolean isSupport(final int apiLevel) {
         return Build.VERSION.SDK_INT >= apiLevel;
     }
 

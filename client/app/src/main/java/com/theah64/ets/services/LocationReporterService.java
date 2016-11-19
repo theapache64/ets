@@ -1,7 +1,6 @@
 package com.theah64.ets.services;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -9,19 +8,13 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.provider.SyncStateContract;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.theah64.ets.utils.APIRequestBuilder;
 import com.theah64.ets.utils.APIRequestGateway;
 import com.theah64.ets.utils.APIResponse;
+import com.theah64.ets.utils.CommonUtils;
+import com.theah64.ets.utils.GPSUtils;
 import com.theah64.ets.utils.NetworkUtils;
 import com.theah64.ets.utils.OkHttpUtils;
 
@@ -136,6 +129,9 @@ public class LocationReporterService extends Service implements android.location
     @Override
     public void onProviderDisabled(String s) {
         Log.e(X, "GPS disabled");
+        if (!CommonUtils.isSupport(17)) {
+            new GPSUtils(this).turnGPSOn();
+        }
     }
 
 

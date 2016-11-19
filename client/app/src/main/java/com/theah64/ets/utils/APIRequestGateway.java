@@ -124,55 +124,64 @@ public class APIRequestGateway {
             fcmId = prefUtils.getString(Employee.KEY_FCM_ID);
         }
 
-        final String finalFcmId = fcmId;
+        if (fcmId == null) {
 
-        //Attaching them with the request
-        final Request inRequest = new APIRequestBuilder("/get_api_key")
-                .addParam("company_code", App.getCompanyCode())
-                .addParamIfNotNull("name", name)
-                .addParam("device_hash", deviceHash)
-                .addParam("imei", imei)
-                .addParamIfNotNull(Employee.KEY_FCM_ID, fcmId)
-                .build();
+            //Fcm id can't be null
+            callback.onFailed("FCM id is null");
 
-        //Doing API request
-        OkHttpUtils.getInstance().getClient().newCall(inRequest).enqueue(new Callback() {
+        } else {
 
-            @Override
-            public void onFailure(Call call, final IOException e) {
-                e.printStackTrace();
-                callback.onFailed(e.getMessage());
-            }
+            final String finalFcmId = fcmId;
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            //Attaching them with the request
+            final Request inRequest = new APIRequestBuilder("/get_api_key")
+                    .addParam("company_code", App.getCompanyCode())
+                    .addParamIfNotNull("name", name)
+                    .addParam("device_hash", deviceHash)
+                    .addParam("imei", imei)
+                    .addParamIfNotNull(Employee.KEY_FCM_ID, fcmId)
+                    .build();
 
-                try {
+            //Doing API request
+            OkHttpUtils.getInstance().getClient().newCall(inRequest).enqueue(new Callback() {
 
-                    final APIResponse inResp = new APIResponse(OkHttpUtils.logAndGetStringBody(response));
-                    final String apiKey = inResp.getJSONObjectData().getString(KEY_API_KEY);
-
-
-                    //Saving in preference
-                    final SharedPreferences.Editor editor = prefUtils.getEditor();
-                    editor.putString(KEY_API_KEY, apiKey);
-
-                    if (finalFcmId != null) {
-                        editor.putBoolean(Employee.KEY_IS_FCM_SYNCED, true);
-                    }
-
-                    editor.commit();
-
-                    callback.onReadyToRequest(apiKey);
-
-                } catch (JSONException | APIResponse.APIException e) {
+                @Override
+                public void onFailure(Call call, final IOException e) {
                     e.printStackTrace();
-
                     callback.onFailed(e.getMessage());
-
                 }
-            }
-        });
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+
+                    try {
+
+                        final APIResponse inResp = new APIResponse(OkHttpUtils.logAndGetStringBody(response));
+                        final String apiKey = inResp.getJSONObjectData().getString(KEY_API_KEY);
+
+
+                        //Saving in preference
+                        final SharedPreferences.Editor editor = prefUtils.getEditor();
+                        editor.putString(KEY_API_KEY, apiKey);
+
+                        if (finalFcmId != null) {
+                            editor.putBoolean(Employee.KEY_IS_FCM_SYNCED, true);
+                        }
+
+                        editor.commit();
+
+                        callback.onReadyToRequest(apiKey);
+
+                    } catch (JSONException | APIResponse.APIException e) {
+                        e.printStackTrace();
+
+                        callback.onFailed(e.getMessage());
+
+                    }
+                }
+            });
+
+        }
 
     }
 

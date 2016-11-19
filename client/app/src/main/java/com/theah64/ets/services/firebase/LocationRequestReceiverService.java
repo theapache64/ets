@@ -27,7 +27,6 @@ public class LocationRequestReceiverService extends FirebaseMessagingService {
             final String type = payload.get(KEY_TYPE);
 
             if (type.equals(TYPE_LOCATION_REQUEST)) {
-                //TODO: location request received.
                 startService(new Intent(this, LocationReporterService.class));
             } else {
                 //TODO: Manage anything else here.
