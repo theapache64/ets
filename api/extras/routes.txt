@@ -15,3 +15,8 @@ route: /update_fcm
 -------------------
 on_req: api_key, fcm_id
 on_resp: status
+
+route: /request_report_location
+---------------------
+on_req: company_code, emp_ids
+on_resp : status 
