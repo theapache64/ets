@@ -24,7 +24,7 @@ CREATE TABLE employees (
   name        VARCHAR(20) NOT NULL,
   imei        VARCHAR(20) NOT NULL,
   device_hash TEXT        NOT NULL,
-  fcm_id      TEXT        NOT NULL,
+  fcm_id      TEXT,
   api_key     VARCHAR(20) NOT NULL,
   is_active   TINYINT(4)  NOT NULL DEFAULT 1,
   created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,

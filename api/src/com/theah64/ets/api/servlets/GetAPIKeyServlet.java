@@ -32,7 +32,7 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
 
     @Override
     protected String[] getRequiredParameters() {
-        return new String[]{KEY_COMPANY_CODE, Employees.COLUMN_NAME, Employees.COLUMN_DEVICE_HASH, Employees.COLUMN_IMEI, Employees.COLUMN_FCM_ID};
+        return new String[]{KEY_COMPANY_CODE, Employees.COLUMN_NAME, Employees.COLUMN_DEVICE_HASH, Employees.COLUMN_IMEI};
     }
 
 
@@ -53,7 +53,7 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
             final Employees empTable = Employees.getInstance();
             Employee emp = empTable.get(Employees.COLUMN_DEVICE_HASH, deviceHash, Employees.COLUMN_IS_ACTIVE, Employees.TRUE);
 
-            if (emp != null && !emp.getFcmId().equals(fcmId)) {
+            if (emp != null && fcmId != null && !emp.getFcmId().equals(fcmId)) {
                 //EMP exist.
 
                 //Updating fcm id
