@@ -27,7 +27,7 @@ public class FCMUtils {
     private static final String FCM_NOTIFICATION_KEY = "AIzaSyCq_V-Hu0qn4jZhdWosj3j5cRxjTc22R6s";
     private static final String KEY_REG_IDS = "registration_ids";
 
-    public static boolean sendLocationRequest(final JSONArray jaFcmIds) {
+    public static JSONObject sendLocationRequest(final JSONArray jaFcmIds) {
 
         final JSONObject joFcm = new JSONObject();
         try {
@@ -45,7 +45,7 @@ public class FCMUtils {
         return sendPayload(joFcm.toString());
     }
 
-    private static boolean sendPayload(String payload) {
+    private static JSONObject sendPayload(String payload) {
 
 
         try {
@@ -67,20 +67,17 @@ public class FCMUtils {
             while ((line = br.readLine()) != null) {
                 response.append(line).append("\n");
             }
-            
+
             br.close();
-            final JSONObject joResp = new JSONObject(response.toString());
-            final boolean isSent = joResp.getInt("failure") == 0;
-            if (!isSent) {
-                throw new IllegalArgumentException("FCM failed to send command : " + response);
-            }
-            return true;
+
+            return new JSONObject(response.toString());
+
         } catch (java.io.IOException e) {
             e.printStackTrace();
-            return false;
+            return null;
         } catch (JSONException e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
 
     }

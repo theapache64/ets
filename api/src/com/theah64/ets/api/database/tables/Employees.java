@@ -9,6 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by theapache64 on 18/11/16,1:31 AM.
@@ -34,6 +36,7 @@ public class Employees extends BaseTable<Employee> {
     public static final String COLUMN_IMEI = "imei";
     public static final String COLUMN_FCM_ID = "fcm_id";
     public static final String COLUMN_DEVICE_HASH = "device_hash";
+    public static final String COLUMN_CODE = "code";
 
     private Employees() {
         super("employees");
@@ -115,15 +118,16 @@ public class Employees extends BaseTable<Employee> {
         return emp;
     }
 
-    public JSONArray getFCMIds(JSONArray jaEmpCodes) throws JSONException {
+    public List<Employee> get(String whereInColumn, JSONArray whereInValues) throws JSONException {
 
-        JSONArray jaFcmIds = null;
-        final StringBuilder queryBuilder = new StringBuilder("SELECT fcm_id FROM employees WHERE code IN (");
+        List<Employee> employeeList = null;
 
-        for (int i = 0; i < jaEmpCodes.length(); i++) {
-            queryBuilder.append("'").append(jaEmpCodes.getString(i)).append("'");
+        final StringBuilder queryBuilder = new StringBuilder(String.format("SELECT name, code, fcm_id FROM employees WHERE %s IN (", whereInColumn));
 
-            if (i < (jaEmpCodes.length() - 1)) {
+        for (int i = 0; i < whereInValues.length(); i++) {
+            queryBuilder.append("'").append(whereInValues.getString(i)).append("'");
+
+            if (i < (whereInValues.length() - 1)) {
                 queryBuilder.append(",");
             } else {
                 queryBuilder.append(");");
@@ -136,9 +140,15 @@ public class Employees extends BaseTable<Employee> {
             final ResultSet rs = stmt.executeQuery(queryBuilder.toString());
 
             if (rs.first()) {
-                jaFcmIds = new JSONArray();
+                employeeList = new ArrayList<>();
                 do {
-                    jaFcmIds.put(rs.getString(COLUMN_FCM_ID));
+
+                    final String name = rs.getString(COLUMN_NAME);
+                    final String empCode = rs.getString(COLUMN_CODE);
+                    final String fcmId = rs.getString(COLUMN_FCM_ID);
+
+                    employeeList.add(new Employee(null, name, null, null, fcmId, null, null, empCode));
+
                 } while (rs.next());
             }
 
@@ -156,6 +166,6 @@ public class Employees extends BaseTable<Employee> {
         }
 
 
-        return jaFcmIds;
+        return employeeList;
     }
 }
