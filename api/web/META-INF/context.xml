@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
 
-        <Resource
+        <!--<Resource
                 name="jdbc/etsLocal"
                 auth="Container"
                 type="javax.sql.DataSource"
@@ -21,28 +21,28 @@
                 password="mike"
                 driverClassName="com.mysql.jdbc.Driver"
                 url="jdbc:mysql://localhost:3306/ets?allowMultiQueries=true"
-                />
+                />-->
 
-    <!--<Resource
-            name="jdbc/etsRemote"
-            auth="Container"
-            type="javax.sql.DataSource"
-            maxActive="55"
-            username="root"
-            password="sqladmin"
-            initialSize="5"
-            factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
-            maxIdle="21"
-            minIdle="13"
-            timeBetweenEvictionRunsMillis="34000"
-            minEvictableIdleTimeMillis="55000"
-            validationQuery="SELECT 1"
-            validationInterval="34"
-            testOnBorrow="true"
-            removeAbandoned="true"
-            removeAbandonedTimeout="233"
-            driverClassName="com.mysql.jdbc.Driver"
-            url="jdbc:mysql://35.161.57.139:3306/ets?allowMultiQueries=true"
-            />-->
+        <Resource
+                name="jdbc/etsRemote"
+                auth="Container"
+                type="javax.sql.DataSource"
+                maxActive="55"
+                username="root"
+                password="sqladmin"
+                initialSize="5"
+                factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+                maxIdle="21"
+                minIdle="13"
+                timeBetweenEvictionRunsMillis="34000"
+                minEvictableIdleTimeMillis="55000"
+                validationQuery="SELECT 1"
+                validationInterval="34"
+                testOnBorrow="true"
+                removeAbandoned="true"
+                removeAbandonedTimeout="233"
+                driverClassName="com.mysql.jdbc.Driver"
+                url="jdbc:mysql://35.161.57.139:3306/ets?allowMultiQueries=true"
+                />
 
 </Context>
