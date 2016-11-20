@@ -13,8 +13,6 @@ import android.util.Log;
 import com.theah64.ets.utils.APIRequestBuilder;
 import com.theah64.ets.utils.APIRequestGateway;
 import com.theah64.ets.utils.APIResponse;
-import com.theah64.ets.utils.CommonUtils;
-import com.theah64.ets.utils.GPSUtils;
 import com.theah64.ets.utils.NetworkUtils;
 import com.theah64.ets.utils.OkHttpUtils;
 
@@ -129,9 +127,6 @@ public class LocationReporterService extends Service implements android.location
     @Override
     public void onProviderDisabled(String s) {
         Log.e(X, "GPS disabled");
-        if (!CommonUtils.isSupport(17)) {
-            new GPSUtils(this).turnGPSOn();
-        }
     }
 
 

@@ -14,7 +14,6 @@ import com.theah64.ets.model.Employee;
 import com.theah64.ets.utils.APIRequestGateway;
 import com.theah64.ets.utils.App;
 import com.theah64.ets.utils.CommonUtils;
-import com.theah64.ets.utils.GPSUtils;
 import com.theah64.ets.utils.NetworkUtils;
 import com.theah64.ets.utils.PrefUtils;
 
@@ -27,10 +26,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        if (!CommonUtils.isSupport(17)) {
-            new GPSUtils(this).turnGPSOn();
-        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
