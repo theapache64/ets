@@ -36,7 +36,7 @@ import java.io.IOException;
 )
 public class App extends Application {
 
-    public static final boolean IS_DEBUG_MODE = false;
+    public static final boolean IS_DEBUG_MODE = true;
     private static final String X = App.class.getSimpleName();
 
     private static String companyCode;
