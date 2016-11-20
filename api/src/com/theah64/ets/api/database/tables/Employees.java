@@ -168,4 +168,46 @@ public class Employees extends BaseTable<Employee> {
 
         return employeeList;
     }
+
+    public List<Employee> getAll(String companyCode) {
+
+        List<Employee> employeeList = null;
+
+        final String query = "SELECT e.name,e.code, e.fcm_id FROM employees e INNER JOIN companies c ON e.company_id = c.id WHERE c.code = ?;";
+        final java.sql.Connection con = Connection.getConnection();
+
+        try {
+            final PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, companyCode);
+
+            final ResultSet rs = ps.executeQuery();
+
+            if (rs.first()) {
+                employeeList = new ArrayList<>();
+                do {
+
+                    final String name = rs.getString(COLUMN_NAME);
+                    final String empCode = rs.getString(COLUMN_CODE);
+                    final String fcmId = rs.getString(COLUMN_FCM_ID);
+
+                    employeeList.add(new Employee(null, name, null, null, fcmId, null, null, empCode));
+
+                } while (rs.next());
+            }
+
+            rs.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return employeeList;
+    }
 }

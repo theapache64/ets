@@ -3,6 +3,7 @@ package com.theah64.ets.api.servlets;
 import com.theah64.ets.api.database.tables.BaseTable;
 import com.theah64.ets.api.database.tables.Companies;
 import com.theah64.ets.api.database.tables.Employees;
+import com.theah64.ets.api.models.Company;
 import com.theah64.ets.api.models.Employee;
 import com.theah64.ets.api.utils.APIResponse;
 import com.theah64.ets.api.utils.RandomString;
@@ -21,7 +22,6 @@ import javax.servlet.annotation.WebServlet;
 @WebServlet(urlPatterns = {AdvancedBaseServlet.VERSION_CODE + "/get_api_key"})
 public class GetAPIKeyServlet extends AdvancedBaseServlet {
 
-    private static final String KEY_COMPANY_CODE = "company_code";
     private static final int API_KEY_LENGTH = 10;
     private static final int EMP_CODE_LENGTH = 10;
 
@@ -32,7 +32,7 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
 
     @Override
     protected String[] getRequiredParameters() {
-        return new String[]{KEY_COMPANY_CODE, Employees.COLUMN_NAME, Employees.COLUMN_DEVICE_HASH, Employees.COLUMN_IMEI};
+        return new String[]{Company.KEY_COMPANY_CODE, Employees.COLUMN_NAME, Employees.COLUMN_DEVICE_HASH, Employees.COLUMN_IMEI};
     }
 
 
@@ -42,7 +42,7 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
         System.out.println("----------------------");
         System.out.println("New api request received....");
 
-        final String companyCode = getStringParameter(KEY_COMPANY_CODE);
+        final String companyCode = getStringParameter(Company.KEY_COMPANY_CODE);
         final String companyId = Companies.getInstance().get(Companies.COLUMN_CODE, companyCode, Companies.COLUMN_ID, true);
 
         if (companyId != null) {

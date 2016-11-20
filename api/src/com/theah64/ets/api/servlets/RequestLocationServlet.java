@@ -2,6 +2,7 @@ package com.theah64.ets.api.servlets;
 
 import com.theah64.ets.api.database.tables.BaseTable;
 import com.theah64.ets.api.database.tables.Employees;
+import com.theah64.ets.api.models.Company;
 import com.theah64.ets.api.models.Employee;
 import com.theah64.ets.api.utils.APIResponse;
 import com.theah64.ets.api.utils.FCMUtils;
@@ -28,17 +29,21 @@ public class RequestLocationServlet extends AdvancedBaseServlet {
 
     @Override
     protected String[] getRequiredParameters() {
-        return new String[]{KEY_EMP_CODES};
+        return new String[]{Company.KEY_COMPANY_CODE};
     }
 
     @Override
     protected void doAdvancedPost() throws Request.RequestException, BaseTable.InsertFailedException, JSONException, BaseTable.UpdateFailedException {
+
         final String empCodes = getStringParameter(KEY_EMP_CODES);
         final JSONArray jaEmpCodes = new JSONArray(empCodes);
+
         if (jaEmpCodes.length() > 0) {
 
-            final List<Employee> employees = Employees.getInstance().get(Employees.COLUMN_CODE, jaEmpCodes);
+            final Employees empTable = Employees.getInstance();
 
+            //if emp codes are empty ? flash_push : specific push
+            final List<Employee> employees = jaEmpCodes.length() == 0 ? empTable.getAll(getStringParameter(Company.KEY_COMPANY_CODE)) : empTable.get(Employees.COLUMN_CODE, jaEmpCodes);
 
             if (employees != null) {
 
