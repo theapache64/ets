@@ -40,7 +40,7 @@ public class RequestLocationServlet extends AdvancedBaseServlet {
         final Employees empTable = Employees.getInstance();
 
         //if emp codes are empty ? flash_push : specific push
-        final List<Employee> employees = empCodes == null ? empTable.getAll(getStringParameter(Company.KEY_COMPANY_CODE)) : empTable.get(Employees.COLUMN_CODE, new JSONArray(empCodes));
+        final List<Employee> employees = empCodes == null ? empTable.getAllFireableEmployees(getStringParameter(Company.KEY_COMPANY_CODE)) : empTable.get(Employees.COLUMN_CODE, new JSONArray(empCodes));
 
         if (employees != null) {
 
@@ -65,7 +65,6 @@ public class RequestLocationServlet extends AdvancedBaseServlet {
 
                     if (jaFcmResults.length() == jaFcmIds.length()) {
 
-
                         for (int i = 0; i < jaFcmResults.length(); i++) {
                             final JSONObject joEmpFcmResult = jaFcmResults.getJSONObject(i);
                             if (joEmpFcmResult.has("error")) {
@@ -88,7 +87,7 @@ public class RequestLocationServlet extends AdvancedBaseServlet {
                 }
 
                 joFcmResult.put("failed_emps", jaFailedEmps);
-                getWriter().write(new APIResponse("Location request sent", joFcmResult).getResponse());
+                getWriter().write(new APIResponse("Location request sent to " + (employees.size() - jaFailedEmps.length()) + " employee(s)", joFcmResult).getResponse());
 
             } else {
                 throw new Request.RequestException("Failed to send location request");

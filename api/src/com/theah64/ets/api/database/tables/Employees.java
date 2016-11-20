@@ -169,11 +169,11 @@ public class Employees extends BaseTable<Employee> {
         return employeeList;
     }
 
-    public List<Employee> getAll(String companyCode) {
+    public List<Employee> getAllFireableEmployees(String companyCode) {
 
         List<Employee> employeeList = null;
 
-        final String query = "SELECT e.name,e.code, e.fcm_id FROM employees e INNER JOIN companies c ON e.company_id = c.id WHERE c.code = ?;";
+        final String query = "SELECT e.name,e.code, e.fcm_id FROM employees e INNER JOIN companies c ON e.company_id = c.id WHERE c.code = ? AND !ISNULL(e.fcm_id);";
         final java.sql.Connection con = Connection.getConnection();
 
         try {
