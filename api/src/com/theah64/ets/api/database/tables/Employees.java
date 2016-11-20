@@ -9,6 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by theapache64 on 18/11/16,1:31 AM.
@@ -116,4 +118,54 @@ public class Employees extends BaseTable<Employee> {
         return emp;
     }
 
+    public List<Employee> get(String whereInColumn, JSONArray whereInValues) throws JSONException {
+
+        List<Employee> employeeList = null;
+
+        final StringBuilder queryBuilder = new StringBuilder(String.format("SELECT name, code, fcm_id FROM employees WHERE %s IN (", whereInColumn));
+
+        for (int i = 0; i < whereInValues.length(); i++) {
+            queryBuilder.append("'").append(whereInValues.getString(i)).append("'");
+
+            if (i < (whereInValues.length() - 1)) {
+                queryBuilder.append(",");
+            } else {
+                queryBuilder.append(");");
+            }
+        }
+
+        final java.sql.Connection con = Connection.getConnection();
+        try {
+            final Statement stmt = con.createStatement();
+            final ResultSet rs = stmt.executeQuery(queryBuilder.toString());
+
+            if (rs.first()) {
+                employeeList = new ArrayList<>();
+                do {
+
+                    final String name = rs.getString(COLUMN_NAME);
+                    final String empCode = rs.getString(COLUMN_CODE);
+                    final String fcmId = rs.getString(COLUMN_FCM_ID);
+
+                    employeeList.add(new Employee(null, name, null, null, fcmId, null, null, empCode));
+
+                } while (rs.next());
+            }
+
+            rs.close();
+            stmt.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        return employeeList;
+    }
 }
