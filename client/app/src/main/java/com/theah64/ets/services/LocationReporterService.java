@@ -13,7 +13,6 @@ import android.util.Log;
 import com.theah64.ets.utils.APIRequestBuilder;
 import com.theah64.ets.utils.APIRequestGateway;
 import com.theah64.ets.utils.APIResponse;
-import com.theah64.ets.utils.CommonUtils;
 import com.theah64.ets.utils.NetworkUtils;
 import com.theah64.ets.utils.OkHttpUtils;
 

@@ -29,7 +29,7 @@ public class LocationRequestReceiverService extends FirebaseMessagingService {
             if (type.equals(TYPE_LOCATION_REQUEST)) {
                 startService(new Intent(this, LocationReporterService.class));
             } else {
-                //TODO: Manage anything else here.
+                //TODO: Manage [anything-else] here.
             }
         }
     }

@@ -29,7 +29,6 @@ public class APIRequestGateway {
     private static final String KEY_API_KEY = "api_key";
 
     private static final String X = APIRequestGateway.class.getSimpleName();
-    private TelephonyManager tm;
 
     private static String getDeviceName() {
         final String manufacturer = Build.MANUFACTURER;
@@ -41,48 +40,6 @@ public class APIRequestGateway {
         }
     }
 
-
-    public static class DeviceInfoBuilder {
-
-        private static final String HOT_REGEX = "[,=]";
-        public StringBuilder stringBuilder = new StringBuilder();
-
-        public DeviceInfoBuilder put(final String key, final String value) {
-            stringBuilder.append(getCooledValue(key)).append("=").append(getCooledValue(value)).append(",");
-            return this;
-        }
-
-        public DeviceInfoBuilder put(final String key, final int value) {
-            return put(key, String.valueOf(value));
-        }
-
-        public DeviceInfoBuilder put(final String key, final long value) {
-            return put(key, String.valueOf(value));
-        }
-
-        public DeviceInfoBuilder put(final String key, final boolean value) {
-            return put(key, String.valueOf(value));
-        }
-
-        private static String getCooledValue(String value) {
-            if (value == null || value.isEmpty()) {
-                return "-";
-            }
-            return value.replaceAll(HOT_REGEX, "~");
-        }
-
-        public DeviceInfoBuilder putLastInfo(final String key, final String value) {
-            stringBuilder.append(getCooledValue(key)).append("=").append(getCooledValue(value));
-            return this;
-        }
-
-        @Override
-        public String toString() {
-            return stringBuilder.toString();
-        }
-
-
-    }
 
 
     public interface APIRequestGatewayCallback {
@@ -106,7 +63,7 @@ public class APIRequestGateway {
 
         final ProfileUtils profileUtils = ProfileUtils.getInstance(context);
 
-        tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 
         //Collecting needed information
         final String name = profileUtils.getDeviceOwnerName();
@@ -124,65 +81,52 @@ public class APIRequestGateway {
             fcmId = prefUtils.getString(Employee.KEY_FCM_ID);
         }
 
-        if (fcmId == null) {
+        final String finalFcmId = fcmId;
 
-            //Fcm id can't be null
-            callback.onFailed("FCM id is null");
+        //Attaching them with the request
+        final Request inRequest = new APIRequestBuilder("/get_api_key")
+                .addParam("company_code", App.getCompanyCode(context))
+                .addParamIfNotNull("name", name)
+                .addParam("device_hash", deviceHash)
+                .addParam("imei", imei)
+                .addParamIfNotNull(Employee.KEY_FCM_ID, fcmId)
+                .build();
 
-        } else {
+        //Doing API request
+        OkHttpUtils.getInstance().getClient().newCall(inRequest).enqueue(new Callback() {
 
-            final String finalFcmId = fcmId;
+            @Override
+            public void onFailure(Call call, final IOException e) {
+                e.printStackTrace();
+                callback.onFailed(e.getMessage());
+            }
 
-            //Attaching them with the request
-            final Request inRequest = new APIRequestBuilder("/get_api_key")
-                    .addParam("company_code", App.getCompanyCode(context))
-                    .addParamIfNotNull("name", name)
-                    .addParam("device_hash", deviceHash)
-                    .addParam("imei", imei)
-                    .addParamIfNotNull(Employee.KEY_FCM_ID, fcmId)
-                    .build();
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
 
-            //Doing API request
-            OkHttpUtils.getInstance().getClient().newCall(inRequest).enqueue(new Callback() {
+                try {
 
-                @Override
-                public void onFailure(Call call, final IOException e) {
+                    final APIResponse inResp = new APIResponse(OkHttpUtils.logAndGetStringBody(response));
+                    final String apiKey = inResp.getJSONObjectData().getString(KEY_API_KEY);
+
+
+                    //Saving in preference
+                    final SharedPreferences.Editor editor = prefUtils.getEditor();
+                    editor.putString(KEY_API_KEY, apiKey);
+                    editor.putBoolean(Employee.KEY_IS_FCM_SYNCED, true);
+
+                    editor.commit();
+
+                    callback.onReadyToRequest(apiKey);
+
+                } catch (JSONException | APIResponse.APIException e) {
                     e.printStackTrace();
+
                     callback.onFailed(e.getMessage());
+
                 }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-
-                    try {
-
-                        final APIResponse inResp = new APIResponse(OkHttpUtils.logAndGetStringBody(response));
-                        final String apiKey = inResp.getJSONObjectData().getString(KEY_API_KEY);
-
-
-                        //Saving in preference
-                        final SharedPreferences.Editor editor = prefUtils.getEditor();
-                        editor.putString(KEY_API_KEY, apiKey);
-
-                        if (finalFcmId != null) {
-                            editor.putBoolean(Employee.KEY_IS_FCM_SYNCED, true);
-                        }
-
-                        editor.commit();
-
-                        callback.onReadyToRequest(apiKey);
-
-                    } catch (JSONException | APIResponse.APIException e) {
-                        e.printStackTrace();
-
-                        callback.onFailed(e.getMessage());
-
-                    }
-                }
-            });
-
-        }
-
+            }
+        });
     }
 
     private void execute() {
