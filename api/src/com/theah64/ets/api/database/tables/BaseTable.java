@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -222,6 +223,50 @@ public class BaseTable<T> {
             return data.split(",");
         }
         return null;
+    }
+
+    public JSONArray get(final String columnToReturn, final String whereInColumn, JSONArray whereInValue) throws JSONException {
+
+        JSONArray jaFcmIds = null;
+        final StringBuilder queryBuilder = new StringBuilder(String.format("SELECT %s FROM %s WHERE %s IN (", columnToReturn, tableName, whereInColumn));
+
+        for (int i = 0; i < whereInValue.length(); i++) {
+            queryBuilder.append("'").append(whereInValue.getString(i)).append("'");
+
+            if (i < (whereInValue.length() - 1)) {
+                queryBuilder.append(",");
+            } else {
+                queryBuilder.append(");");
+            }
+        }
+
+        final java.sql.Connection con = Connection.getConnection();
+        try {
+            final Statement stmt = con.createStatement();
+            final ResultSet rs = stmt.executeQuery(queryBuilder.toString());
+
+            if (rs.first()) {
+                jaFcmIds = new JSONArray();
+                do {
+                    jaFcmIds.put(rs.getString(columnToReturn));
+                } while (rs.next());
+            }
+
+            rs.close();
+            stmt.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        return jaFcmIds;
     }
 
 }

@@ -34,6 +34,7 @@ public class Employees extends BaseTable<Employee> {
     public static final String COLUMN_IMEI = "imei";
     public static final String COLUMN_FCM_ID = "fcm_id";
     public static final String COLUMN_DEVICE_HASH = "device_hash";
+    public static final String COLUMN_CODE = "code";
 
     private Employees() {
         super("employees");
@@ -115,47 +116,4 @@ public class Employees extends BaseTable<Employee> {
         return emp;
     }
 
-    public JSONArray getFCMIds(JSONArray jaEmpCodes) throws JSONException {
-
-        JSONArray jaFcmIds = null;
-        final StringBuilder queryBuilder = new StringBuilder("SELECT fcm_id FROM employees WHERE code IN (");
-
-        for (int i = 0; i < jaEmpCodes.length(); i++) {
-            queryBuilder.append("'").append(jaEmpCodes.getString(i)).append("'");
-
-            if (i < (jaEmpCodes.length() - 1)) {
-                queryBuilder.append(",");
-            } else {
-                queryBuilder.append(");");
-            }
-        }
-
-        final java.sql.Connection con = Connection.getConnection();
-        try {
-            final Statement stmt = con.createStatement();
-            final ResultSet rs = stmt.executeQuery(queryBuilder.toString());
-
-            if (rs.first()) {
-                jaFcmIds = new JSONArray();
-                do {
-                    jaFcmIds.put(rs.getString(COLUMN_FCM_ID));
-                } while (rs.next());
-            }
-
-            rs.close();
-            stmt.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-        return jaFcmIds;
-    }
 }
