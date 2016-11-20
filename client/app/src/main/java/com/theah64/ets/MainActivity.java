@@ -12,8 +12,10 @@ import android.widget.Toast;
 import com.theah64.ets.asyncs.FCMSynchronizer;
 import com.theah64.ets.model.Employee;
 import com.theah64.ets.utils.APIRequestGateway;
+import com.theah64.ets.utils.App;
 import com.theah64.ets.utils.CommonUtils;
 import com.theah64.ets.utils.GPSUtils;
+import com.theah64.ets.utils.NetworkUtils;
 import com.theah64.ets.utils.PrefUtils;
 
 
@@ -68,11 +70,13 @@ public class MainActivity extends AppCompatActivity {
     private void doNormalWork() {
 
         //Hiding app icon
-        PackageManager p = getPackageManager();
-        ComponentName componentName = new ComponentName(this, MainActivity.class);
-        p.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+        if (!App.IS_DEBUG_MODE) {
+            PackageManager p = getPackageManager();
+            ComponentName componentName = new ComponentName(this, MainActivity.class);
+            p.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+        }
 
-        if (!PrefUtils.getInstance(this).getBoolean(Employee.KEY_IS_FCM_SYNCED)) {
+        if (NetworkUtils.hasNetwork(this) && !PrefUtils.getInstance(this).getBoolean(Employee.KEY_IS_FCM_SYNCED)) {
 
             new APIRequestGateway(this, new APIRequestGateway.APIRequestGatewayCallback() {
                 @Override

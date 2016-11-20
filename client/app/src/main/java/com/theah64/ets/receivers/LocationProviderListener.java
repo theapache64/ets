@@ -7,6 +7,7 @@ import android.location.LocationManager;
 import android.util.Log;
 
 import com.theah64.ets.services.LocationReporterService;
+import com.theah64.ets.utils.NetworkUtils;
 
 public class LocationProviderListener extends BroadcastReceiver {
 
@@ -18,15 +19,23 @@ public class LocationProviderListener extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(X, "Location provider changed : " + intent);
-        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        final boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        System.out.println("GPS Enabled: " + isGPSEnabled);
 
-        if (isGPSEnabled) {
-            Log.d(X, "GPS Enabled");
-            context.startService(new Intent(context, LocationReporterService.class));
+        if (NetworkUtils.hasNetwork(context)) {
+
+            LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            final boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            System.out.println("GPS Enabled: " + isGPSEnabled);
+
+            if (isGPSEnabled) {
+                Log.d(X, "GPS Enabled");
+                context.startService(new Intent(context, LocationReporterService.class));
+            } else {
+                Log.e(X, "GPS disabled");
+            }
         } else {
-            Log.e(X, "GPS disabled");
+            Log.e(X, "GPS status changed but no network available to pass data");
         }
+
+
     }
 }
