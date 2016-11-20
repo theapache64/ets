@@ -36,72 +36,67 @@ public class RequestLocationServlet extends AdvancedBaseServlet {
     protected void doAdvancedPost() throws Request.RequestException, BaseTable.InsertFailedException, JSONException, BaseTable.UpdateFailedException {
 
         final String empCodes = getStringParameter(KEY_EMP_CODES);
-        final JSONArray jaEmpCodes = new JSONArray(empCodes);
 
-        if (jaEmpCodes.length() > 0) {
+        final Employees empTable = Employees.getInstance();
 
-            final Employees empTable = Employees.getInstance();
+        //if emp codes are empty ? flash_push : specific push
+        final List<Employee> employees = empCodes == null ? empTable.getAll(getStringParameter(Company.KEY_COMPANY_CODE)) : empTable.get(Employees.COLUMN_CODE, new JSONArray(empCodes));
 
-            //if emp codes are empty ? flash_push : specific push
-            final List<Employee> employees = jaEmpCodes.length() == 0 ? empTable.getAll(getStringParameter(Company.KEY_COMPANY_CODE)) : empTable.get(Employees.COLUMN_CODE, jaEmpCodes);
+        if (employees != null) {
 
-            if (employees != null) {
+            final JSONArray jaFcmIds = new JSONArray();
+            for (final Employee employee : employees) {
+                jaFcmIds.put(employee.getFcmId());
+            }
 
-                final JSONArray jaFcmIds = new JSONArray();
-                for (final Employee employee : employees) {
-                    jaFcmIds.put(employee.getFcmId());
-                }
+            //Alright
+            final JSONObject joFcmResp = FCMUtils.sendLocationRequest(jaFcmIds);
 
-                //Alright
-                final JSONObject joFcmResp = FCMUtils.sendLocationRequest(jaFcmIds);
+            if (joFcmResp != null) {
 
-                if (joFcmResp != null) {
+                final boolean isEverythingOk = joFcmResp.getInt("failure") == 0;
+                final JSONObject joFcmResult = new JSONObject();
+                final JSONArray jaFailedEmps = new JSONArray();
 
-                    final boolean isEverythingOk = joFcmResp.getInt("failure") == 0;
-                    final JSONObject joFcmResult = new JSONObject();
-                    final JSONArray jaFailedEmps = new JSONArray();
+                if (!isEverythingOk) {
 
-                    if (!isEverythingOk) {
+                    //Looping through result
+                    final JSONArray jaFcmResults = joFcmResp.getJSONArray("results");
 
-                        //Looping through result
-                        final JSONArray jaFcmResults = joFcmResp.getJSONArray("results");
-
-                        if (jaFcmResults.length() == jaFcmIds.length()) {
+                    if (jaFcmResults.length() == jaFcmIds.length()) {
 
 
-                            for (int i = 0; i < jaFcmResults.length(); i++) {
-                                final JSONObject joEmpFcmResult = jaFcmResults.getJSONObject(i);
-                                if (joEmpFcmResult.has("error")) {
+                        for (int i = 0; i < jaFcmResults.length(); i++) {
+                            final JSONObject joEmpFcmResult = jaFcmResults.getJSONObject(i);
+                            if (joEmpFcmResult.has("error")) {
 
-                                    final Employee failedEmp = employees.get(i);
-                                    final JSONObject joFailedEmp = new JSONObject();
+                                final Employee failedEmp = employees.get(i);
+                                final JSONObject joFailedEmp = new JSONObject();
 
-                                    joFailedEmp.put(Employees.COLUMN_NAME, failedEmp.getName());
-                                    joFailedEmp.put(Employees.COLUMN_CODE, failedEmp.getEmpCode());
+                                joFailedEmp.put(Employees.COLUMN_NAME, failedEmp.getName());
+                                joFailedEmp.put(Employees.COLUMN_CODE, failedEmp.getEmpCode());
 
-                                    jaFailedEmps.put(joFailedEmp);
-                                }
+                                jaFailedEmps.put(joFailedEmp);
                             }
-
-
-                        } else {
-                            throw new Request.RequestException("fcm id count doesn't match with collected and requested");
                         }
 
+
+                    } else {
+                        throw new Request.RequestException("fcm id count doesn't match with collected and requested");
                     }
 
-                    joFcmResult.put("failed_emps", jaFailedEmps);
-                    getWriter().write(new APIResponse("Location request sent", joFcmResult).getResponse());
-
-                } else {
-                    throw new Request.RequestException("Failed to send location request");
                 }
 
+                joFcmResult.put("failed_emps", jaFailedEmps);
+                getWriter().write(new APIResponse("Location request sent", joFcmResult).getResponse());
+
             } else {
-                throw new Request.RequestException("Couldn't find fcm_id from the given emp_codes: " + empCodes);
+                throw new Request.RequestException("Failed to send location request");
             }
+
         } else {
-            throw new Request.RequestException("Can't proceed without at least one emp_code");
+            throw new Request.RequestException("No employee found in the given company or with the emp_codes");
         }
+
     }
 }
