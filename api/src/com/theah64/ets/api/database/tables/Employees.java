@@ -85,15 +85,14 @@ public class Employees extends BaseTable<Employee> {
     }
 
     @Override
-    public Employee get(String column1, String value1, String column2, String value2) {
+    public Employee get(String column1, String value1) {
         Employee emp = null;
-        final String query = String.format("SELECT id, fcm_id, api_key FROM employees WHERE %s = ? AND %s = ?", column1, column2);
+        final String query = String.format("SELECT id, fcm_id, api_key FROM employees WHERE %s = ?", column1);
         final java.sql.Connection con = Connection.getConnection();
         try {
             final PreparedStatement ps = con.prepareStatement(query);
 
             ps.setString(1, value1);
-            ps.setString(2, value2);
 
             final ResultSet rs = ps.executeQuery();
 
@@ -169,16 +168,16 @@ public class Employees extends BaseTable<Employee> {
         return employeeList;
     }
 
-    public List<Employee> getAllFireableEmployees(String companyCode) {
+    public List<Employee> getAllFireableEmployees(String companyId) {
 
         List<Employee> employeeList = null;
 
-        final String query = "SELECT e.name,e.code, e.fcm_id FROM employees e INNER JOIN companies c ON e.company_id = c.id WHERE c.code = ? AND !ISNULL(e.fcm_id);";
+        final String query = "SELECT e.name,e.code, e.fcm_id FROM employees e WHERE e.company_id = ? AND !ISNULL(e.fcm_id);";
         final java.sql.Connection con = Connection.getConnection();
 
         try {
             final PreparedStatement ps = con.prepareStatement(query);
-            ps.setString(1, companyCode);
+            ps.setString(1, companyId);
 
             final ResultSet rs = ps.executeQuery();
 

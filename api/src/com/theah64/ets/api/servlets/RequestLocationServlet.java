@@ -1,6 +1,7 @@
 package com.theah64.ets.api.servlets;
 
 import com.theah64.ets.api.database.tables.BaseTable;
+import com.theah64.ets.api.database.tables.Companies;
 import com.theah64.ets.api.database.tables.Employees;
 import com.theah64.ets.api.models.Company;
 import com.theah64.ets.api.models.Employee;
@@ -11,7 +12,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -27,9 +32,15 @@ public class RequestLocationServlet extends AdvancedBaseServlet {
         return false;
     }
 
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doPost(req, resp);
+    }
+
     @Override
     protected String[] getRequiredParameters() {
-        return new String[]{Company.KEY_COMPANY_CODE};
+        return new String[]{Companies.COLUMN_ID};
     }
 
     @Override
@@ -40,7 +51,7 @@ public class RequestLocationServlet extends AdvancedBaseServlet {
         final Employees empTable = Employees.getInstance();
 
         //if emp codes are empty ? flash_push : specific push
-        final List<Employee> employees = empCodes == null ? empTable.getAllFireableEmployees(getStringParameter(Company.KEY_COMPANY_CODE)) : empTable.get(Employees.COLUMN_CODE, new JSONArray(empCodes));
+        final List<Employee> employees = empCodes == null ? empTable.getAllFireableEmployees(getStringParameter(Companies.COLUMN_ID)) : empTable.get(Employees.COLUMN_CODE, new JSONArray(empCodes));
 
         if (employees != null) {
 

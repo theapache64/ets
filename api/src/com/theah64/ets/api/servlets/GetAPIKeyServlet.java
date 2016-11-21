@@ -51,7 +51,7 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
             final String fcmId = getStringParameter(Employees.COLUMN_FCM_ID);
 
             final Employees empTable = Employees.getInstance();
-            Employee emp = empTable.get(Employees.COLUMN_DEVICE_HASH, deviceHash, Employees.COLUMN_IS_ACTIVE, Employees.TRUE);
+            Employee emp = empTable.get(Employees.COLUMN_DEVICE_HASH, deviceHash);
 
             if (emp != null && fcmId != null && !emp.getFcmId().equals(fcmId)) {
                 //EMP exist.
