@@ -56,6 +56,7 @@ public class RequestLocationServlet extends AdvancedBaseServlet {
         if (employees != null) {
 
             final JSONArray jaFcmIds = new JSONArray();
+
             for (final Employee employee : employees) {
                 jaFcmIds.put(employee.getFcmId());
             }
@@ -98,6 +99,7 @@ public class RequestLocationServlet extends AdvancedBaseServlet {
                 }
 
                 joFcmResult.put("failed_emps", jaFailedEmps);
+                joFcmResult.put("fcm_resp", joFcmResp);
                 getWriter().write(new APIResponse("Location request sent to " + (employees.size() - jaFailedEmps.length()) + " employee(s)", joFcmResult).getResponse());
 
             } else {
