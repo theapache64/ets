@@ -81,7 +81,7 @@ public class APIRequestBuilder {
         return requestBuilder.build();
     }
 
-    public APIRequestBuilder addParamIfNotNull(String key, String value) {
+    APIRequestBuilder addParamIfNotNull(String key, String value) {
         return addParam(false, key, value);
     }
 }
