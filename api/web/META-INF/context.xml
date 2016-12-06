@@ -21,7 +21,8 @@
             password="mike"
             driverClassName="com.mysql.jdbc.Driver"
             url="jdbc:mysql://localhost:3306/ets?allowMultiQueries=true"
-            />-->
+
+    />-->
 
     <Resource
             name="jdbc/etsRemote"
