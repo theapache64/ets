@@ -11,7 +11,6 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * Created by theapache64 on 19/11/16,2:58 PM.
@@ -26,7 +25,7 @@ public class ReportLocationServlet extends AdvancedBaseServlet {
 
     @Override
     protected String[] getRequiredParameters() {
-        return new String[]{LocationHistories.COLUMN_LATITUDE, LocationHistories.COLUMN_LONGITUDE};
+        return new String[]{LocationHistories.COLUMN_LATITUDE, LocationHistories.COLUMN_LONGITUDE, LocationHistories.COLUMN_DEVICE_TIME};
     }
 
     @Override
@@ -36,8 +35,9 @@ public class ReportLocationServlet extends AdvancedBaseServlet {
 
         final String lat = getStringParameter(LocationHistories.COLUMN_LATITUDE);
         final String lon = getStringParameter(LocationHistories.COLUMN_LONGITUDE);
+        final String deviceTime = getStringParameter(LocationHistories.COLUMN_DEVICE_TIME);
 
-        LocationHistories.getInstance().add(new Location(empId, lat, lon));
+        LocationHistories.getInstance().add(new Location(empId, lat, lon, deviceTime));
 
         //success
         getWriter().write(new APIResponse("Location reported", null).getResponse());

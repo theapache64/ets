@@ -38,12 +38,13 @@ CREATE TABLE employees (
 );
 
 CREATE TABLE location_histories (
-  id          INT         NOT NULL AUTO_INCREMENT,
-  employee_id INT         NOT NULL,
-  lat         VARCHAR(20) NOT NULL,
-  lon         VARCHAR(20) NOT NULL,
-  is_active   TINYINT(4)  NOT NULL DEFAULT 1,
-  created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  id          INT          NOT NULL AUTO_INCREMENT,
+  employee_id INT          NOT NULL,
+  lat         VARCHAR(20)  NOT NULL,
+  lon         VARCHAR(20)  NOT NULL,
+  is_active   TINYINT(4)   NOT NULL DEFAULT 1,
+  device_time VARCHAR(100) NOT NULL,
+  created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   FOREIGN KEY (employee_id) REFERENCES employees (id)
     ON UPDATE CASCADE
