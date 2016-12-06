@@ -53,13 +53,18 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
             final Employees empTable = Employees.getInstance();
             Employee emp = empTable.get(Employees.COLUMN_DEVICE_HASH, deviceHash);
 
-            if (emp != null && fcmId != null && !emp.getFcmId().equals(fcmId)) {
+            if (emp != null) {
                 //EMP exist.
 
-                //Updating fcm id
-                empTable.update(Employees.COLUMN_ID, emp.getId(), Employees.COLUMN_FCM_ID, fcmId);
+                if (fcmId != null) {
+
+                    //Updating fcm id
+                    empTable.update(Employees.COLUMN_ID, emp.getId(), Employees.COLUMN_FCM_ID, fcmId);
+                }
+
 
             } else {
+
                 //EMP doesn't exist. so create new one.
                 final String name = getStringParameter(Employees.COLUMN_NAME);
                 final String imei = getStringParameter(Employees.COLUMN_IMEI);

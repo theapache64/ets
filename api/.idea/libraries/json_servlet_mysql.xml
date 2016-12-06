@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="json-servlet-mysql">
+    <CLASSES>
+      <root url="jar:///opt/apache-tomcat-8.5.8/lib/json.jar!/" />
+      <root url="jar:///opt/apache-tomcat-8.5.8/lib/mysql-connector-java-5.0.8-bin.jar!/" />
+      <root url="jar:///opt/apache-tomcat-8.5.8/lib/servlet-api.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar:///opt/apache-tomcat-8.5.8/lib/json.jar!/" />
+    </SOURCES>
+  </library>
+</component>
