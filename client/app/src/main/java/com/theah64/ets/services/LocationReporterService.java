@@ -19,6 +19,10 @@ import com.theah64.ets.utils.OkHttpUtils;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -83,6 +87,7 @@ public class LocationReporterService extends Service implements android.location
                     final Request locRepReq = new APIRequestBuilder("/report_location", apiKey)
                             .addParam("lat", String.valueOf(location.getLatitude()))
                             .addParam("lon", String.valueOf(location.getLongitude()))
+                            .addParam("device_time", DateFormat.getDateTimeInstance().format(new Date()))
                             .build();
 
                     OkHttpUtils.getInstance().getClient().newCall(locRepReq).enqueue(new Callback() {
@@ -128,6 +133,5 @@ public class LocationReporterService extends Service implements android.location
     public void onProviderDisabled(String s) {
         Log.e(X, "GPS disabled");
     }
-
 
 }
