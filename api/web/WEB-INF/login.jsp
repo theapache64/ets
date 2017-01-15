@@ -9,6 +9,7 @@
 <html>
 <head>
     <title>Login</title>
+    <%@include file="common_headers.jsp" %>
 </head>
 <body>
 

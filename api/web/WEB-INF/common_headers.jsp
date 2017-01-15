@@ -1,4 +1,4 @@
-<%@ page import="com.theah64.xrob.api.database.Connection" %>
+<%@ page import="com.theah64.ets.api.database.Connection" %>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 

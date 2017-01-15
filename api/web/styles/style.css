@@ -1,8 +1,11 @@
-
-body {
+/*body {
     background: url(/assets/clean-gray-paper.png) repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
+}*/
+
+body {
+    background-color: #f5f5f5;
 }
