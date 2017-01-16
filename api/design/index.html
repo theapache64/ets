@@ -15,12 +15,23 @@
 
     <link rel="stylesheet" href="styles/style.css">
     <script>
+
+        var map = null;
+
         $(document).ready(function () {
 
-            $("div.employee").click(function () {
-                alert($(this));
+            $("div.employee button").click(function (e) {
+                e.stopPropagation();
             });
 
+
+            $("div.employee").click(function () {
+                var lat = $(this).data("lat");
+                var lon = $(this).data("lon");
+
+                var gLatLon = new google.maps.LatLng(lat,lon);
+                map.panTo(gLatLon);
+            });
         });
     </script>
 
@@ -53,17 +64,19 @@
         <!--Employees-->
         <div id="employees" class="col-md-3" style="height: 89%;overflow: scroll;">
 
-            <div class="employee" data-name="John" data-lat="24.466667" data-lon="54.366669">
+            <div class="employee" data-id="1" data-name="John" data-lat="24.466667" data-lon="54.366669"
+                 data-last-seen="2 minutes ago">
                 <p class="employee_name"><strong>John</strong></p>
                 <p class="employee_status">last seen 2 minutes ago in Abudhabi</p>
-                <button type="button" class="btn"><span class="glyphicon glyphicon-map-marker"></span>
+                <button type="button" class="btn"><span class="glyphicon glyphicon-refresh"></span>
                 </button>
             </div>
 
-            <div class="employee" data-name="David" data-lat="25.322327" data-lon="55.513641">
+            <div class="employee" data-id="2" data-name="David" data-lat="25.322327" data-lon="55.513641"
+                 data-last-seen="5 minutes ago">
                 <p class="employee_name"><strong>David</strong></p>
                 <p class="employee_status">last seen 2 minutes ago in Sharjah</p>
-                <button type="button" class="btn"><span class="glyphicon glyphicon-map-marker"></span>
+                <button type="button" class="btn"><span class="glyphicon glyphicon-refresh"></span>
                 </button>
             </div>
 
@@ -89,7 +102,8 @@
             center: dubai,
             zoom: 10
         }
-        var map = new google.maps.Map(mapCanvas, mapOptions);
+
+        map = new google.maps.Map(mapCanvas, mapOptions);
 
         //Pinning last location of employees
         var employees = $("div#employees").children();
@@ -100,11 +114,32 @@
             var name = $(employees[i]).data("name");
             var lat = $(employees[i]).data("lat");
             var lon = $(employees[i]).data("lon");
+            var lastSeen = $(employees[i]).data("last-seen");
 
-            var gLatLon = new google.maps.LatLng(lat,lon);
+            //Setting marker
+            var gLatLon = new google.maps.LatLng(lat, lon);
+            var marker = new google.maps.Marker({position: gLatLon});
+
+            marker.setMap(map);
+
+            //Building info window with employee name
+            var infoWindow = new google.maps.InfoWindow(
+                {
+                    content: name + " - (" + lastSeen + ")"
+                }
+            );
+
+            //Showing info window
+            infoWindow.open(map, marker);
+
+            //Click on zoom
+            google.maps.event.addListener(marker,'click',function() {
+                map.setZoom(18);
+                console.log(marker.getPosition());
+                map.setCenter(marker.getPosition());
+            });
 
         }
-
     }
 
 </script>

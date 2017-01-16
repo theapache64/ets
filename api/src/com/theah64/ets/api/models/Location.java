@@ -36,6 +36,7 @@ public class Location {
                 "empId='" + empId + '\'' +
                 ", lat='" + lat + '\'' +
                 ", lon='" + lon + '\'' +
+                ", deviceTime='" + deviceTime + '\'' +
                 '}';
     }
 }

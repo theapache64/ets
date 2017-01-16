@@ -14,8 +14,9 @@ package com.theah64.ets.api.models;
  */
 public class Employee {
     private final String id, name, imei, deviceHash, fcmId, apiKey, companyId,empCode;
+    private final Location lastKnownLocation;
 
-    public Employee(String id, String name, String imei, String deviceHash, String fcmId, String apiKey, String companyId, String empCode) {
+    public Employee(String id, String name, String imei, String deviceHash, String fcmId, String apiKey, String companyId, String empCode, Location lastKnownLocation) {
         this.id = id;
         this.name = name;
         this.imei = imei;
@@ -24,6 +25,7 @@ public class Employee {
         this.apiKey = apiKey;
         this.companyId = companyId;
         this.empCode = empCode;
+        this.lastKnownLocation = lastKnownLocation;
     }
 
     public String getId() {
@@ -58,6 +60,10 @@ public class Employee {
         return empCode;
     }
 
+    public Location getLastKnownLocation() {
+        return lastKnownLocation;
+    }
+
     @Override
     public String toString() {
         return "Employee{" +
@@ -69,6 +75,7 @@ public class Employee {
                 ", apiKey='" + apiKey + '\'' +
                 ", companyId='" + companyId + '\'' +
                 ", empCode='" + empCode + '\'' +
+                ", lastKnownLocation=" + lastKnownLocation +
                 '}';
     }
 }

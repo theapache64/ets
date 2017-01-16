@@ -2,6 +2,7 @@ package com.theah64.ets.api.database.tables;
 
 import com.theah64.ets.api.database.Connection;
 import com.theah64.ets.api.models.Employee;
+import com.theah64.ets.api.models.Location;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -37,6 +38,7 @@ public class Employees extends BaseTable<Employee> {
     public static final String COLUMN_FCM_ID = "fcm_id";
     public static final String COLUMN_DEVICE_HASH = "device_hash";
     public static final String COLUMN_CODE = "code";
+    public static final String COLUMN_COMPANY_ID = "company_id";
 
     private Employees() {
         super("employees");
@@ -100,7 +102,7 @@ public class Employees extends BaseTable<Employee> {
                 final String id = rs.getString(COLUMN_ID);
                 final String fcmId = rs.getString(COLUMN_FCM_ID);
                 final String apiKey = rs.getString(COLUMN_API_KEY);
-                emp = new Employee(id, null, null, null, fcmId, apiKey, null, null);
+                emp = new Employee(id, null, null, null, fcmId, apiKey, null, null, null);
             }
 
             rs.close();
@@ -146,7 +148,7 @@ public class Employees extends BaseTable<Employee> {
                     final String empCode = rs.getString(COLUMN_CODE);
                     final String fcmId = rs.getString(COLUMN_FCM_ID);
 
-                    employeeList.add(new Employee(null, name, null, null, fcmId, null, null, empCode));
+                    employeeList.add(new Employee(null, name, null, null, fcmId, null, null, empCode, null));
 
                 } while (rs.next());
             }
@@ -168,11 +170,11 @@ public class Employees extends BaseTable<Employee> {
         return employeeList;
     }
 
-    public List<Employee> getAllFireableEmployees(String companyId) {
+    public List<Employee> getAllFireableEmployees(String companyId, boolean isLastKnownLocationNeeded) {
 
         List<Employee> employeeList = null;
 
-        final String query = "SELECT e.name,e.code, e.fcm_id FROM employees e WHERE e.company_id = ? AND !ISNULL(e.fcm_id);";
+        final String query = "SELECT e.id,e.name,e.code, e.fcm_id FROM employees e WHERE e.company_id = ? AND !ISNULL(e.fcm_id);";
         final java.sql.Connection con = Connection.getConnection();
 
         try {
@@ -183,13 +185,17 @@ public class Employees extends BaseTable<Employee> {
 
             if (rs.first()) {
                 employeeList = new ArrayList<>();
+                final LocationHistories locationHistories = LocationHistories.getInstance();
                 do {
 
+                    final String id = rs.getString(COLUMN_ID);
                     final String name = rs.getString(COLUMN_NAME);
                     final String empCode = rs.getString(COLUMN_CODE);
                     final String fcmId = rs.getString(COLUMN_FCM_ID);
 
-                    employeeList.add(new Employee(null, name, null, null, fcmId, null, null, empCode));
+                    employeeList.add(new Employee(
+                            null, name, null, null,
+                            fcmId, null, null, empCode, isLastKnownLocationNeeded ? locationHistories.getLastKnownLocation(id) : null));
 
                 } while (rs.next());
             }
@@ -209,4 +215,5 @@ public class Employees extends BaseTable<Employee> {
 
         return employeeList;
     }
+
 }

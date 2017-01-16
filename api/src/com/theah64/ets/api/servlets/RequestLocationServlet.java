@@ -50,7 +50,7 @@ public class RequestLocationServlet extends AdvancedBaseServlet {
         final Employees empTable = Employees.getInstance();
 
         //if emp codes are empty ? flash_push : specific push
-        final List<Employee> employees = empCodes == null ? empTable.getAllFireableEmployees(getStringParameter(Companies.COLUMN_ID)) : empTable.get(Employees.COLUMN_CODE, new JSONArray(empCodes));
+        final List<Employee> employees = empCodes == null ? empTable.getAllFireableEmployees(getStringParameter(Companies.COLUMN_ID), false) : empTable.get(Employees.COLUMN_CODE, new JSONArray(empCodes));
 
         if (employees != null) {
 

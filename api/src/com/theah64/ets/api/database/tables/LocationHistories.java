@@ -4,6 +4,7 @@ import com.theah64.ets.api.database.Connection;
 import com.theah64.ets.api.models.Location;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -55,6 +56,39 @@ public class LocationHistories extends BaseTable<Location> {
         if (isFailed) {
             throw new InsertFailedException("Failed to add new employee");
         }
+    }
+
+
+    public Location getLastKnownLocation(String employeeId) {
+        Location location = null;
+        final String query = "SELECT lat,lon,device_time FROM location_histories WHERE employee_id = ? ORDER BY id DESC LIMIT 1";
+        final java.sql.Connection con = Connection.getConnection();
+        try {
+            final PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, employeeId);
+
+            final ResultSet rs = ps.executeQuery();
+            if (rs.first()) {
+                final String lat = rs.getString(COLUMN_LATITUDE);
+                final String lon = rs.getString(COLUMN_LONGITUDE);
+                final String deviceTime = rs.getString(COLUMN_DEVICE_TIME);
+
+                location = new Location(null, lat, lon, deviceTime);
+            }
+
+            rs.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return location;
     }
 }
 

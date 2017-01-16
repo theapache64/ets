@@ -72,7 +72,7 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
                 final String apiKey = RandomString.getNewApiKey(API_KEY_LENGTH);
                 final String empCode = RandomString.getRandomString(EMP_CODE_LENGTH);
 
-                emp = new Employee(null, name, imei, deviceHash, fcmId, apiKey, companyId, empCode);
+                emp = new Employee(null, name, imei, deviceHash, fcmId, apiKey, companyId, empCode, null);
                 empTable.add(emp);
             }
 
