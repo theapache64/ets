@@ -15,9 +15,9 @@
 
     <link rel="stylesheet" href="styles/style.css">
     <script>
-        $(document).ready(function(){
+        $(document).ready(function () {
 
-            $("div.employee").click(function(){
+            $("div.employee").click(function () {
                 alert($(this));
             });
 
@@ -51,22 +51,21 @@
     <div class="row">
 
         <!--Employees-->
-        <div class="col-md-3" style="height: 89%;overflow: scroll;">
+        <div id="employees" class="col-md-3" style="height: 89%;overflow: scroll;">
 
-            <div class="employee" data-lat="24.466667" data-lon="54.366669">
+            <div class="employee" data-name="John" data-lat="24.466667" data-lon="54.366669">
                 <p class="employee_name"><strong>John</strong></p>
                 <p class="employee_status">last seen 2 minutes ago in Abudhabi</p>
                 <button type="button" class="btn"><span class="glyphicon glyphicon-map-marker"></span>
                 </button>
             </div>
 
-            <div class="employee" data-lat="24.466667" data-lon="54.366669">
-                <p class="employee_name"><strong>John</strong></p>
-                <p class="employee_status">last seen 2 minutes ago in Abudhabi</p>
+            <div class="employee" data-name="David" data-lat="25.322327" data-lon="55.513641">
+                <p class="employee_name"><strong>David</strong></p>
+                <p class="employee_status">last seen 2 minutes ago in Sharjah</p>
                 <button type="button" class="btn"><span class="glyphicon glyphicon-map-marker"></span>
                 </button>
             </div>
-
 
 
         </div>
@@ -91,6 +90,21 @@
             zoom: 10
         }
         var map = new google.maps.Map(mapCanvas, mapOptions);
+
+        //Pinning last location of employees
+        var employees = $("div#employees").children();
+        console.log("Found " + employees.length + " employee(s)");
+
+        for (var i = 0; i < employees.length; i++) {
+
+            var name = $(employees[i]).data("name");
+            var lat = $(employees[i]).data("lat");
+            var lon = $(employees[i]).data("lon");
+
+            var gLatLon = new google.maps.LatLng(lat,lon);
+
+        }
+
     }
 
 </script>
