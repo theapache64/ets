@@ -1,4 +1,5 @@
-<%@ page import="com.theah64.ets.api.database.tables.Companies" %><%--
+<%@ page import="com.theah64.ets.api.database.tables.Companies" %>
+<%@ page import="com.theah64.ets.api.models.Company" %><%--
   Created by IntelliJ IDEA.
   User: theapache64
   Date: 12/9/16
@@ -8,7 +9,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     if (session.getAttribute(Companies.COLUMN_ID) != null) {
-        response.sendRedirect("/control_panel");
+        response.sendRedirect("index.jsp");
         return;
     }
 %>
@@ -29,7 +30,7 @@
         <div class="col-md-4  content-centered">
 
             <%--Form--%>
-            <form action="/signin" method="POST" role="form">
+            <form action="signin.jsp" method="POST" role="form">
 
                 <div class="form-group">
                     <label for="iUsername">Username : </label>
@@ -53,17 +54,19 @@
 
                             if (isFormSubmitted) {
 
-                                final String username = request.getParameter(Clients.COLUMN_USERNAME);
+                                final String username = request.getParameter(Companies.COLUMN_USERNAME);
                                 final String password = request.getParameter("password");
 
-                                final Client theClient = Clients.getInstance().get(Clients.COLUMN_USERNAME, username, Clients.COLUMN_PASS_HASH, DarKnight.getEncrypted(password));
+                                final Company company = Companies.getInstance().get(Companies.COLUMN_USERNAME, username, Companies.COLUMN_PASSWORD, password);
 
-                                if (theClient != null) {
-                                    session.setAttribute(Clients.COLUMN_ID, theClient.getId());
-                                    response.sendRedirect("/client/panel");
+                                if (company != null && company.isActive()) {
+                                    session.setAttribute(Companies.COLUMN_ID, company.getId());
+                                    response.sendRedirect("index.jsp");
                                 } else {
                         %>
-                        <div class="text-danger pull-left">Invalid credentials!!</div>
+                        <div class="text-danger pull-left">
+                            <%=company == null ? "Invalid credentials!!" : "BLOCKED COMPANY"%>
+                        </div>
 
                         <%
                                 }
@@ -83,12 +86,6 @@
             </form>
 
 
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12 text-center">
-            Don't have an account, <a href="/client/signup">Sign up</a>
         </div>
     </div>
 </div>

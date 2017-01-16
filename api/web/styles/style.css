@@ -9,3 +9,12 @@
 body {
     background-color: #f5f5f5;
 }
+
+.content-centered {
+    float: none;
+    margin: 0 auto;
+}
+
+a:hover {
+    text-decoration: none;
+}

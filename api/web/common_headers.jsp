@@ -6,10 +6,10 @@
     if (Connection.isDebugMode()) {
 %>
 <%--OFFLINE RESOURCES--%>
-<link rel="stylesheet" href="/styles/bootstrap.min.css">
-<script src="/js/jquery-2.2.4.min.js"></script>
-<script src="/js/bootstrap.min.js"></script>
-<script src="/js/validator.min.js"></script>
+<link rel="stylesheet" href="styles/bootstrap.min.css">
+<script src="js/jquery-2.2.4.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/validator.min.js"></script>
 <%
 } else {
 %>
