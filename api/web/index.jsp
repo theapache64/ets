@@ -23,6 +23,7 @@
 
         $(document).ready(function () {
 
+            //onRequest location button
             $("div.employee button").click(function (e) {
 
                 //Sending location request
@@ -47,6 +48,7 @@
             });
 
 
+            //onShow current employee location
             $("div.employee").click(function () {
                 var lat = $(this).data("lat");
                 var lon = $(this).data("lon");
@@ -54,6 +56,9 @@
                 var gLatLon = new google.maps.LatLng(lat, lon);
                 map.panTo(gLatLon);
             });
+
+            //building socket
+
         });
     </script>
 
@@ -130,8 +135,8 @@
             var lat = $(employees[i]).data("lat");
             var lon = $(employees[i]).data("lon");
 
-            if(!lat || !lon){
-                console.log("no location found for "+ name);
+            if (!lat || !lon) {
+                console.log("no location found for " + name);
                 continue;
             }
 
