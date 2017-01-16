@@ -3,7 +3,7 @@
   Created by IntelliJ IDEA.
   User: theapache64
   Date: 12/9/16
-  Time: 4:08 PM
+  Time: 4:08 PM=
   To change this template use FileNode | Settings | FileNode Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -15,7 +15,7 @@
 %>
 <html>
 <head>
-    <title>Client Sign in</title>
+    <title>Comapany SignIn</title>
     <%@include file="common_headers.jsp" %>
 </head>
 <body>
@@ -34,14 +34,15 @@
 
                 <div class="form-group">
                     <label for="iUsername">Username : </label>
-                    <input value="testuser" name="username" type="text" id="iUsername" class="form-control"
+                    <input value="<%=Connection.isDebugMode() ? "etsadmin" : ""%>" name="username" type="text"
+                           id="iUsername" class="form-control"
                            placeholder="Username"/>
                 </div>
 
 
                 <div class="form-group">
                     <label for="iPassword">Password : </label>
-                    <input value="testpass" name="password" type="password" id="iPassword" class="form-control"
+                    <input value="<%=Connection.isDebugMode() ? "1234" : ""%>" name="password" type="password" id="iPassword" class="form-control"
                            placeholder="Password"/>
                 </div>
 

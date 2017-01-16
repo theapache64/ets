@@ -1,4 +1,4 @@
 <%
-  session.invalidate();
-  response.sendRedirect("/client/signin");
+    session.invalidate();
+    response.sendRedirect("signin.jsp");
 %>
