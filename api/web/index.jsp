@@ -9,11 +9,27 @@
 <%@include file="signin_check.jsp" %>
 <html>
 <head>
-    <title><%=company.getName()+" - Control PANEL"%>
+    <title><%=company.getName() + " - Control PANEL"%>
     </title>
     <%@include file="common_headers.jsp" %>
 </head>
 <body>
 
+<%@include file="navbar.jsp" %>
+
+<div class="container-fluid">
+
+    <%--Main--%>
+    <div class="row">
+        <%--Employee list--%>
+        <div class="col-md-3" style="background-color: #1b6d85;">
+            <h4>Employees</h4>
+        </div>
+
+        <%--Map view--%>
+        <div class="col-md-9">
+        </div>
+    </div>
+</div>
 </body>
 </html>

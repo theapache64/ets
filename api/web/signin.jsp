@@ -21,8 +21,9 @@
 <body>
 <div class="container">
 
-    <div class="row">
-        <h1 class="text-center">Sign in</h1>
+    <div class="row text-center">
+        <h1>SignIn</h1>
+        <p >Enter your company credentials</p>
     </div>
 
     <div class="row">
