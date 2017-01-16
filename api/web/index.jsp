@@ -9,7 +9,8 @@
 <%@include file="signin_check.jsp" %>
 <html>
 <head>
-    <title>Control Panel</title>
+    <title><%=company.getName()+" - Control PANEL"%>
+    </title>
     <%@include file="common_headers.jsp" %>
 </head>
 <body>
