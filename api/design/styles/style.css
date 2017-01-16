@@ -20,9 +20,11 @@ a:hover {
 }
 
 div.employee {
+    cursor: pointer;
     background-color: #e6e6e6;
     padding: 10px;
     border-radius: 4px;
+    margin-bottom: 10px;
 }
 
 div.employee:hover {
@@ -36,8 +38,12 @@ div.employee > p.employee_name {
 div.employee > p.employee_status {
     font-size: 12px;
     margin: 0px;
+    font-style: italic;
+    color: #969696;
 }
 
 div.employee > button{
-    position: absolute;
+    position: relative;
+    top: -38px;
+    float: right;
 }

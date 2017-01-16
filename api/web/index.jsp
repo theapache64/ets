@@ -22,12 +22,19 @@
     <%--Main--%>
     <div class="row">
         <%--Employee list--%>
-        <div class="col-md-3" style="background-color: #1b6d85;">
-            <h4>Employees</h4>
+        <div class="col-md-2">
+
+            <div class="employee">
+                <p class="employee_name"><strong>John</strong></p>
+                <p class="employee_status">Last seen: 2 minutes ago</p>
+                <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-map-marker"></span>
+                </button>
+            </div>
+
         </div>
 
         <%--Map view--%>
-        <div class="col-md-9">
+        <div class="col-md-10">
         </div>
     </div>
 </div>
