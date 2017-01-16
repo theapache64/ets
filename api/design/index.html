@@ -7,13 +7,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.5/validator.min.js"></script>
+    <link rel="stylesheet" href="styles/bootstrap.min.css">
+    <script src="js/jquery-2.2.4.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/validator.min.js"></script>
 
 
     <link rel="stylesheet" href="styles/style.css">
+
+
     <script>
 
         var map = null;
@@ -21,6 +23,36 @@
         $(document).ready(function () {
 
             $("div.employee button").click(function (e) {
+
+                //Sending location request
+                var empCode = $(this).data("emp-code");
+
+                //Changing status
+                var pEmpStatus = $(this).siblings(".employee_status");
+                $(pEmpStatus).text("Requesting for new location...");
+
+                $.ajax({
+                    url: '/v1/request_location',
+                    type: 'GET',
+                    data: {
+                        id: 1,
+                        emp_codes: "[" + empCode + "]"
+                    },
+                    success: function (data, status) {
+                        if (!data.error) {
+                            $(pEmpStatus).text("Location request sent");
+                        } else {
+                            $(pEmpStatus).text(data.message);
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                        $(pEmpStatus).text("ERROR: " + data.status + ", Please check your connection");
+                    }
+
+                });
+
+
                 e.stopPropagation();
             });
 
@@ -29,9 +61,36 @@
                 var lat = $(this).data("lat");
                 var lon = $(this).data("lon");
 
-                var gLatLon = new google.maps.LatLng(lat,lon);
+                var gLatLon = new google.maps.LatLng(lat, lon);
                 map.panTo(gLatLon);
             });
+
+            //Building websocket
+            var webSocket = new WebSocket("ws://localhost:8080/v1/ets_socket/1");
+
+            //onOpen
+            webSocket.onopen = function (evnt) {
+                log("Socket opened");
+            };
+
+            //onMessage
+            webSocket.onmessage = function (evnt) {
+                log("onMessage:" + evnt.data);
+            };
+
+            webSocket.onclose = function (evnt) {
+                log("Socket closed: " + evnt.data);
+            };
+
+            webSocket.onerror = function (evnt) {
+                log("ERROR: " + evnt.data);
+            };
+
+            function log(message) {
+                $("p#ws_status").append(message).append("\n");
+            }
+
+
         });
     </script>
 
@@ -58,25 +117,43 @@
 
 <div class="container-fluid">
 
+    <div class="row">
+        <div class="col-md-10">
+            <!--Test row-->
+            <p id="ws_status"></p>
+        </div>
+    </div>
 
     <div class="row">
 
         <!--Employees-->
         <div id="employees" class="col-md-3" style="height: 89%;overflow: scroll;">
 
-            <div class="employee" data-id="1" data-name="John" data-lat="24.466667" data-lon="54.366669"
-                 data-last-seen="2 minutes ago">
-                <p class="employee_name"><strong>John</strong></p>
-                <p class="employee_status">last seen 2 minutes ago in Abudhabi</p>
-                <button type="button" class="btn"><span class="glyphicon glyphicon-refresh"></span>
+
+            <div class="employee" data-name="Fouad Wehbi"
+                 data-lat="25.162535140460566"
+                 data-lon="55.41629871437395"
+                 data-last-seen="15 Jan 2017 3:04:35 p.m.">
+                <p class="employee_name"><strong>Fouad Wehbi
+                </strong></p>
+                <p class="employee_status">last seen 15 Jan 2017 3:04:35 p.m.
+                </p>
+                <button data-emp-code="mtZcB7qhqo" type="button" class="btn"><span
+                        class="glyphicon glyphicon-refresh"></span>
                 </button>
             </div>
 
-            <div class="employee" data-id="2" data-name="David" data-lat="25.322327" data-lon="55.513641"
-                 data-last-seen="5 minutes ago">
-                <p class="employee_name"><strong>David</strong></p>
-                <p class="employee_status">last seen 2 minutes ago in Sharjah</p>
-                <button type="button" class="btn"><span class="glyphicon glyphicon-refresh"></span>
+
+            <div class="employee" data-name="001 kareem"
+                 data-lat="25.24946291"
+                 data-lon="55.29909011"
+                 data-last-seen="Jan 15, 2017 2:21:22 PM">
+                <p class="employee_name"><strong>001 kareem
+                </strong></p>
+                <p class="employee_status">last seen Jan 15, 2017 2:21:22 PM
+                </p>
+                <button data-emp-code="bs0RSZW664" type="button" class="btn"><span
+                        class="glyphicon glyphicon-refresh"></span>
                 </button>
             </div>
 
@@ -114,6 +191,12 @@
             var name = $(employees[i]).data("name");
             var lat = $(employees[i]).data("lat");
             var lon = $(employees[i]).data("lon");
+
+            if (!lat || !lon) {
+                console.log("no location found for " + name);
+                continue;
+            }
+
             var lastSeen = $(employees[i]).data("last-seen");
 
             //Setting marker
@@ -133,9 +216,8 @@
             infoWindow.open(map, marker);
 
             //Click on zoom
-            google.maps.event.addListener(marker,'click',function() {
+            google.maps.event.addListener(marker, 'click', function () {
                 map.setZoom(18);
-                console.log(marker.getPosition());
                 map.setCenter(marker.getPosition());
             });
 
@@ -146,4 +228,3 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCwmri1d59R8EH5zyXAw-BXRcEMFUtKjA4&callback=initMap"></script>
 </body>
 </html>
-

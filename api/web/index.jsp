@@ -19,11 +19,12 @@
 
     <script>
 
-        var map = null;
+        var map;
+        var markers = [];
+
 
         $(document).ready(function () {
 
-            //onRequest location button
             $("div.employee button").click(function (e) {
 
                 //Sending location request
@@ -33,31 +34,124 @@
                 var pEmpStatus = $(this).siblings(".employee_status");
                 $(pEmpStatus).text("Requesting for new location...");
 
-                $.get('/v1/request_location', {
-                    id:<%=company.getId()%>,
-                    emp_codes: "[" + empCode + "]"
-                }, function (data, status) {
-                    if (!data.error) {
-                        $(pEmpStatus).text("Location request sent");
-                    } else {
-                        $(pEmpStatus).text(data.message);
+                $.ajax({
+                    url: '/v1/request_location',
+                    type: 'GET',
+                    data: {
+                        id: 1,
+                        emp_codes: "[" + empCode + "]"
+                    },
+                    success: function (data, status) {
+                        if (!data.error) {
+                            $(pEmpStatus).text("Location request sent");
+                        } else {
+                            $(pEmpStatus).text(data.message);
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data);
+                        $(pEmpStatus).text("ERROR: " + data.status + ", Please check your connection");
                     }
+
                 });
+
 
                 e.stopPropagation();
             });
 
 
-            //onShow current employee location
             $("div.employee").click(function () {
                 var lat = $(this).data("lat");
                 var lon = $(this).data("lon");
 
-                var gLatLon = new google.maps.LatLng(lat, lon);
-                map.panTo(gLatLon);
+                moveMapTo(lat, lon);
             });
 
-            //building socket
+            function moveMapTo(lat, lon) {
+                var gLatLon = new google.maps.LatLng(lat, lon);
+                map.panTo(gLatLon);
+            }
+
+            //Building websocket
+            var webSocket = new WebSocket("ws://localhost:8080/v1/ets_socket/<%=company.getCode()%>");
+
+            log("Opening socket...");
+
+            //onOpen
+            webSocket.onopen = function (evnt) {
+                log("Socket opened");
+            };
+
+            //onMessage
+            webSocket.onmessage = function (evnt) {
+
+
+//              {"error":false,"data":{"company_id":"1","employee_id":"1",message:"Hello"}}
+                var data = JSON.parse(event.data);
+
+                var employeeId = data.employee_id;
+                var message = data.message;
+
+                var empDivId = "div#" + employeeId;
+
+                console.log(data.type);
+
+                if (data.type == 'location') {
+
+                    //Removing old pin
+                    console.log("empId: " + employeeId);
+                    console.log("markers: " + markers.length);
+                    console.log(markers[employeeId]);
+
+                    //markers[employeeId].infowindow.close();
+                    markers[employeeId].setMap(null);
+
+                    var name = $(empDivId).data("name");
+                    lat = data.lat;
+                    lon = data.lon;
+
+                    gLatLon = new google.maps.LatLng(lat, lon);
+                    marker = new google.maps.Marker({position: gLatLon});
+                    marker.setMap(map);
+
+                    var infoWindow = new google.maps.InfoWindow(
+                        {
+                            content: name + " - ( " + data.device_time + " )"
+                        }
+                    );
+
+                    //Showing info window
+                    infoWindow.open(map, marker);
+
+                    //Click on zoom
+                    google.maps.event.addListener(marker, 'click', function () {
+                        map.setZoom(18);
+                        map.setCenter(marker.getPosition());
+                    });
+
+                    //Setting new values
+                    $(empDivId).data("lat", lat);
+                    $(empDivId).data("lon", lon);
+
+                    markers[employeeId] = marker;
+
+                }
+
+                $(empDivId).find("p.employee_status").text(message);
+            };
+
+            webSocket.onclose = function (evnt) {
+                log("Socket closed: " + evnt.data);
+            };
+
+            webSocket.onerror = function (evnt) {
+                log("ERROR: " + evnt.data);
+            };
+
+            function log(message) {
+                $("p#ws_status").text(message);
+            }
+
 
         });
     </script>
@@ -68,6 +162,14 @@
 <%@include file="navbar.jsp" %>
 
 <div class="container-fluid">
+
+
+    <div class="row">
+        <div class="col-md-10">
+            <!--Test row-->
+            <p id="ws_status"></p>
+        </div>
+    </div>
 
 
     <div class="row">
@@ -82,7 +184,7 @@
                         final Location loc = employee.getLastKnownLocation();
             %>
 
-            <div class="employee" data-name="<%=employee.getName()%>"
+            <div id="<%=employee.getId()%>" class="employee" data-name="<%=employee.getName()%>"
                  data-lat="<%=loc!=null ? loc.getLat() : ""%>"
                  data-lon="<%=loc!=null ? loc.getLon() : ""%>"
                  data-last-seen="<%=loc!=null ? loc.getDeviceTime() : ""%>">
@@ -145,7 +247,6 @@
             //Setting marker
             var gLatLon = new google.maps.LatLng(lat, lon);
             var marker = new google.maps.Marker({position: gLatLon});
-
             marker.setMap(map);
 
             //Building info window with employee name
@@ -164,6 +265,10 @@
                 map.setCenter(marker.getPosition());
             });
 
+            //Saving marker
+            var empId = $(employees[i]).attr("id");
+            markers[empId] = marker;
+            console.log("markers: " + markers.length);
         }
     }
 

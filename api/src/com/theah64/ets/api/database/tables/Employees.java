@@ -194,7 +194,7 @@ public class Employees extends BaseTable<Employee> {
                     final String fcmId = rs.getString(COLUMN_FCM_ID);
 
                     employeeList.add(new Employee(
-                            null, name, null, null,
+                            id, name, null, null,
                             fcmId, null, null, empCode, isLastKnownLocationNeeded ? locationHistories.getLastKnownLocation(id) : null));
 
                 } while (rs.next());

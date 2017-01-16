@@ -16,6 +16,7 @@ public class LocationHistories extends BaseTable<Location> {
     public static final String COLUMN_LATITUDE = "lat";
     public static final String COLUMN_LONGITUDE = "lon";
     public static final String COLUMN_DEVICE_TIME = "device_time";
+    public static final String COLUMN_EMPLOYEE_ID = "employee_id";
 
     private LocationHistories() {
         super("location_histories");

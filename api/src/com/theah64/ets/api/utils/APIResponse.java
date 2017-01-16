@@ -9,10 +9,10 @@ import org.json.JSONObject;
 public class APIResponse {
 
     private static final int ERROR_CODE_NO_ERROR = 0;
-    private static final String KEY_ERROR = "error";
+    public static final String KEY_ERROR = "error";
     private static final String KEY_ERROR_CODE = "error_code";
-    private static final String KEY_MESSAGE = "message";
-    private static final String KEY_DATA = "data";
+    public static final String KEY_MESSAGE = "message";
+    public static final String KEY_DATA = "data";
     private final JSONObject joResp = new JSONObject();
 
     private final boolean hasError;
