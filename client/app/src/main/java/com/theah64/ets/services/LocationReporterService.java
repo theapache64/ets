@@ -15,7 +15,9 @@ import com.theah64.ets.utils.APIRequestGateway;
 import com.theah64.ets.utils.APIResponse;
 import com.theah64.ets.utils.NetworkUtils;
 import com.theah64.ets.utils.OkHttpUtils;
+import com.theah64.ets.utils.WebSocketHelper;
 
+import org.java_websocket.client.WebSocketClient;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -32,7 +34,7 @@ import okhttp3.Response;
 public class LocationReporterService extends Service implements android.location.LocationListener {
 
     private static final String X = LocationReporterService.class.getSimpleName();
-
+    private WebSocketClient webSocketClient;
 
     public LocationReporterService() {
     }
@@ -42,6 +44,7 @@ public class LocationReporterService extends Service implements android.location
         Log.d(X, "Location reporter started...");
 
         Log.d(X, "Google api client connected");
+        
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 

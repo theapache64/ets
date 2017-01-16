@@ -9,10 +9,13 @@ import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.HttpSender;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.URI;
 
 /**
  * Created by theapache64 on 19/11/16.
@@ -36,7 +39,7 @@ import java.io.IOException;
 )
 public class App extends Application {
 
-    public static final boolean IS_DEBUG_MODE = false;
+    public static final boolean IS_DEBUG_MODE = true;
     private static final String X = App.class.getSimpleName();
 
     private static String companyCode;
