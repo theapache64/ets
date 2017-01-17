@@ -1,8 +1,8 @@
-<%@ page import="com.theah64.ets.api.models.Employee" %>
-<%@ page import="java.util.List" %>
 <%@ page import="com.theah64.ets.api.database.tables.Employees" %>
+<%@ page import="com.theah64.ets.api.models.Employee" %>
 <%@ page import="com.theah64.ets.api.models.Location" %>
-<%@ page import="com.theah64.ets.api.database.tables.LocationHistories" %><%--
+<%@ page import="java.util.List" %>
+<%--
   Created by IntelliJ IDEA.
   User: theapache64
   Date: 17/11/16
@@ -73,7 +73,7 @@
             }
 
             //Building websocket
-            var webSocket = new WebSocket("ws://localhost:8080/v1/ets_socket/<%=company.getCode()%>");
+            var webSocket = new WebSocket("ws://192.168.43.234:8080/v1/ets_socket/<%=company.getCode()%>");
 
             log("Opening socket...");
 
@@ -87,16 +87,19 @@
 
 
 //              {"error":false,"data":{"company_id":"1","employee_id":"1",message:"Hello"}}
-                var data = JSON.parse(event.data);
+                var joResp = JSON.parse(event.data);
 
-                var employeeId = data.employee_id;
-                var message = data.message;
+                console.log(joResp);
+                var message = joResp.message;
+
+                var joData = joResp.data;
+                var employeeId = joData.employee_id;
 
                 var empDivId = "div#" + employeeId;
 
-                console.log(data.type);
+                console.log(joResp.type);
 
-                if (data.type == 'location') {
+                if (joData.type == 'location') {
 
                     //Removing old pin
                     console.log("empId: " + employeeId);
@@ -107,8 +110,8 @@
                     markers[employeeId].setMap(null);
 
                     var name = $(empDivId).data("name");
-                    lat = data.lat;
-                    lon = data.lon;
+                    lat = joData.lat;
+                    lon = joData.lon;
 
                     gLatLon = new google.maps.LatLng(lat, lon);
                     marker = new google.maps.Marker({position: gLatLon});
@@ -116,7 +119,7 @@
 
                     var infoWindow = new google.maps.InfoWindow(
                         {
-                            content: name + " - ( " + data.device_time + " )"
+                            content: name + " - ( " + joData.device_time + " )"
                         }
                     );
 

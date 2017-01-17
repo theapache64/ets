@@ -15,7 +15,7 @@
 %>
 <html>
 <head>
-    <title>Comapany SignIn</title>
+    <title>Company SignIn</title>
     <%@include file="common_headers.jsp" %>
 </head>
 <body>

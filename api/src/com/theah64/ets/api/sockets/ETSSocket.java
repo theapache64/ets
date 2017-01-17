@@ -2,7 +2,6 @@ package com.theah64.ets.api.sockets;
 
 import com.theah64.ets.api.database.tables.Companies;
 import com.theah64.ets.api.database.tables.Employees;
-import com.theah64.ets.api.database.tables.LocationHistories;
 import com.theah64.ets.api.models.Company;
 import com.theah64.ets.api.servlets.AdvancedBaseServlet;
 import com.theah64.ets.api.utils.APIResponse;
@@ -29,12 +28,12 @@ public class ETSSocket {
 
         //Getting company id from company code
         final Company company = Companies.getInstance().get(Companies.COLUMN_CODE, companyCode);
-        if (company != null) {
+        if (company != null && company.isActive()) {
             //company exists
             activeSessions.computeIfAbsent(company.getId(), k -> new HashSet<>());
             activeSessions.get(company.getId()).add(session);
         } else {
-            System.out.println("Company doesn't exist");
+            System.out.println("Invalid request");
             session.close();
         }
     }
@@ -55,7 +54,7 @@ public class ETSSocket {
                 synchronized (activeSessions) {
                     for (final Session client : activeSessions.get(companyId)) {
                         if (!client.equals(session)) {
-                            client.getBasicRemote().sendText(joData.toString());
+                            client.getBasicRemote().sendText(data);
                         }
                     }
                 }
@@ -76,16 +75,24 @@ public class ETSSocket {
 
     @OnClose
     public void onClose(Session session) {
-        System.out.println("Socket closed: " + session);
+        System.out.println("Closing socket " + session);
+
         //Looping through every company to find the session and then remove it
         final List<String> companyCode = session.getRequestParameterMap().get(Companies.COLUMN_CODE);
+        System.out.println("CompanyCode: " + companyCode);
+
         if (companyCode != null) {
             final String cmpCode = companyCode.get(0);
+            System.out.println("companyCode: " + cmpCode);
             final Company company = Companies.getInstance().get(Companies.COLUMN_CODE, cmpCode);
             if (company != null) {
+                System.out.println("company: " + company);
                 activeSessions.get(company.getId()).remove(session);
+                return;
             }
         }
+
+        throw new IllegalArgumentException("Failed to close session");
     }
 
 }
