@@ -35,10 +35,10 @@
                 $(pEmpStatus).text("Requesting for new location...");
 
                 $.ajax({
-                    url: '/v1/request_location',
+                    url: '<%=Connection.isDebugMode()? "/v1/request_location" : "/ets/v1/request_location" %>',
                     type: 'GET',
                     data: {
-                        id: 1,
+                        id: <%=company.getId()%>,
                         emp_codes: "[" + empCode + "]"
                     },
                     success: function (data, status) {
@@ -72,8 +72,13 @@
                 map.panTo(gLatLon);
             }
 
+            var url = "<%=Connection.isDebugMode()
+            ? "ws://localhost:8080/v1/ets_socket/" + company.getCode()
+            : "ws://employeetrackingsystem.xyz:8080/ets/v1/ets_socket/"+ company.getCode()%>";
+
+
             //Building websocket
-            var webSocket = new WebSocket("ws://localhost:8080/v1/ets_socket/<%=company.getCode()%>");
+            var webSocket = new WebSocket(url);
 
             log("Opening socket...");
 
@@ -270,7 +275,7 @@
             console.log("markers: " + markers.length);
         }
 
-        function setMarker(marker){
+        function setMarker(marker) {
 
             //Click on zoom
             google.maps.event.addListener(marker, 'click', function () {

@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <%
-    if (!Connection.isDebugMode()) {
+    if (Connection.isDebugMode()) {
 %>
 <%--OFFLINE RESOURCES--%>
 <link rel="stylesheet" href="styles/bootstrap.min.css">
