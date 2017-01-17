@@ -14,6 +14,13 @@
     <title>Employees - <%=company.getName()%>
     </title>
     <%@include file="common_headers.jsp" %>
+
+    <script>
+        $(document).ready(function () {
+            alert("loaded");
+        });
+    </script>
+
 </head>
 <body>
 <%@include file="navbar.jsp" %>
@@ -44,20 +51,20 @@
                             //Looping through each employee
                             for (final Employee employee : employees) {
                     %>
-                <tr>
+                <tr data-emp-id="<%=employee.getId()%>">
                     <td><%=employee.getName()%>
                     </td>
                     <td>
                         <%=employee.getImei()%>
                     </td>
                     <td>
-                        <a type="button" class="btn btn-default"><span class="glyphicon glyphicon-map-marker"></span>
+                        <a type="button" class="btn btn-default showEmpLocation"><span
+                                class="glyphicon glyphicon-map-marker"></span>
                         </a>
-                        <a type="button" class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span>
-
+                        <a type="button" class="btn btn-default editEmp"><span
+                                class="glyphicon glyphicon-pencil"></span>
                         </a>
-                        <a type="button" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span>
-
+                        <a type="button" class="btn btn-default delEmp"><span class="glyphicon glyphicon-remove"></span>
                         </a>
                     </td>
                 </tr>

@@ -73,7 +73,7 @@
             }
 
             //Building websocket
-            var webSocket = new WebSocket("ws://192.168.43.234:8080/v1/ets_socket/<%=company.getCode()%>");
+            var webSocket = new WebSocket("ws://localhost:8080/v1/ets_socket/<%=company.getCode()%>");
 
             log("Opening socket...");
 
@@ -262,16 +262,22 @@
             //Showing info window
             infoWindow.open(map, marker);
 
+            setMarker(marker);
+
+            //Saving marker
+            var empId = $(employees[i]).attr("id");
+            markers[empId] = marker;
+            console.log("markers: " + markers.length);
+        }
+
+        function setMarker(marker){
+
             //Click on zoom
             google.maps.event.addListener(marker, 'click', function () {
                 map.setZoom(18);
                 map.setCenter(marker.getPosition());
             });
 
-            //Saving marker
-            var empId = $(employees[i]).attr("id");
-            markers[empId] = marker;
-            console.log("markers: " + markers.length);
         }
     }
 
