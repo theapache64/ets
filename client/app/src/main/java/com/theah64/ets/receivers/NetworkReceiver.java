@@ -44,10 +44,11 @@ public class NetworkReceiver extends BroadcastReceiver {
         if (NetworkUtils.hasNetwork(context)) {
 
             if (!PrefUtils.getInstance(context).getBoolean(Employee.KEY_IS_FCM_SYNCED)) {
+
                 new APIRequestGateway(context, new APIRequestGateway.APIRequestGatewayCallback() {
 
                     @Override
-                    public void onReadyToRequest(String apiKey) {
+                    public void onReadyToRequest(String apiKey,final String id) {
                         new FCMSynchronizer(context, apiKey).execute();
                     }
 

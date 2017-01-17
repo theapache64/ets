@@ -5,8 +5,16 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.theah64.ets.model.SocketMessage;
 import com.theah64.ets.services.LocationReporterService;
+import com.theah64.ets.utils.APIRequestGateway;
+import com.theah64.ets.utils.App;
+import com.theah64.ets.utils.WebSocketHelper;
 
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 public class LocationRequestReceiverService extends FirebaseMessagingService {
@@ -27,7 +35,22 @@ public class LocationRequestReceiverService extends FirebaseMessagingService {
             final String type = payload.get(KEY_TYPE);
 
             if (type.equals(TYPE_LOCATION_REQUEST)) {
-                startService(new Intent(this, LocationReporterService.class));
+                new APIRequestGateway(this, new APIRequestGateway.APIRequestGatewayCallback() {
+                    @Override
+                    public void onReadyToRequest(String apiKey, String id) {
+                        final Intent locReqIntent = new Intent(LocationRequestReceiverService.this, LocationReporterService.class);
+                        locReqIntent.putExtra(APIRequestGateway.KEY_API_KEY, apiKey);
+                        locReqIntent.putExtra(SocketMessage.KEY_EMPLOYEE_ID, id);
+
+                        startService(locReqIntent);
+                    }
+
+                    @Override
+                    public void onFailed(String reason) {
+
+                    }
+                });
+
             } else {
                 //TODO: Manage [anything-else] here.
             }

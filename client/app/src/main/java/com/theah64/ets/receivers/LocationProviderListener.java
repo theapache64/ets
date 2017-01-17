@@ -6,36 +6,55 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.util.Log;
 
+import com.theah64.ets.model.SocketMessage;
 import com.theah64.ets.services.LocationReporterService;
+import com.theah64.ets.services.firebase.LocationRequestReceiverService;
+import com.theah64.ets.utils.APIRequestGateway;
 import com.theah64.ets.utils.NetworkUtils;
+import com.theah64.ets.utils.PermissionUtils;
+import com.theah64.ets.utils.WebSocketHelper;
 
-public class LocationProviderListener extends BroadcastReceiver {
+public class LocationProviderListener extends BroadcastReceiver implements PermissionUtils.Callback {
 
     private static final String X = LocationProviderListener.class.getSimpleName();
+    private Context context;
 
     public LocationProviderListener() {
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, Intent intent) {
         Log.d(X, "Location provider changed : " + intent);
+        this.context = context;
+        new PermissionUtils(context, this, null).begin();
+    }
 
-        if (NetworkUtils.hasNetwork(context)) {
+    @Override
+    public void onAllPermissionGranted() {
 
-            LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-            final boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            System.out.println("GPS Enabled: " + isGPSEnabled);
+        Log.d(X, "GPS Enabled");
+        new APIRequestGateway(context, new APIRequestGateway.APIRequestGatewayCallback() {
+            @Override
+            public void onReadyToRequest(String apiKey, String id) {
 
-            if (isGPSEnabled) {
-                Log.d(X, "GPS Enabled");
-                context.startService(new Intent(context, LocationReporterService.class));
-            } else {
-                Log.e(X, "GPS disabled");
+                final Intent locReqIntent = new Intent(context, LocationReporterService.class);
+                locReqIntent.putExtra(APIRequestGateway.KEY_API_KEY, apiKey);
+                locReqIntent.putExtra(SocketMessage.KEY_EMPLOYEE_ID, id);
+
+                context.startService(locReqIntent);
             }
-        } else {
-            Log.e(X, "GPS status changed but no network available to pass data");
-        }
+
+            @Override
+            public void onFailed(String reason) {
+
+            }
+        });
 
 
+    }
+
+    @Override
+    public void onPermissionDenial() {
+        Log.e(X, "Permissions are not accepted");
     }
 }

@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import com.theah64.ets.model.SocketMessage;
+
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
@@ -16,6 +18,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Created by theapache64 on 19/11/16.
@@ -42,7 +45,11 @@ public class App extends Application {
     public static final boolean IS_DEBUG_MODE = true;
     private static final String X = App.class.getSimpleName();
 
-    private static String companyCode;
+    private static String companyId, companyCode;
+
+    public static String getCompanyId() {
+        return companyId;
+    }
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -51,10 +58,39 @@ public class App extends Application {
         ACRA.init(this);
     }
 
-    public static String getCompanyCode(final Context context) throws IOException, JSONException {
-        if (companyCode == null) {
-            companyCode = new JSONObject(FileUtils.readTextualAsset(context, "core.json")).getString("company_code");
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        final JSONObject joCore;
+        try {
+            joCore = new JSONObject(FileUtils.readTextualAsset(this, "core.json"));
+            companyCode = joCore.getString("company_code");
+            companyId = joCore.getString("company_id");
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Failed to read core.json");
         }
+
+        new APIRequestGateway(this, new APIRequestGateway.APIRequestGatewayCallback() {
+            @Override
+            public void onReadyToRequest(String apiKey, String id) {
+                try {
+                    WebSocketHelper.getInstance().send(new SocketMessage("App started", id));
+                } catch (IOException | JSONException | URISyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailed(String reason) {
+
+            }
+        });
+
+
+    }
+
+    public static String getCompanyCode() throws IOException, JSONException {
         return companyCode;
     }
 }

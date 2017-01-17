@@ -12,6 +12,7 @@ import com.theah64.ets.model.Employee;
 
 import org.acra.ACRA;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -24,11 +25,12 @@ import okhttp3.Response;
  * All the auth needed API request must be passed through this gate way.
  * Created by theapache64 on 12/9/16.
  */
-public class APIRequestGateway {
+public class APIRequestGateway implements PermissionUtils.Callback {
 
-    private static final String KEY_API_KEY = "api_key";
-
+    public static final String KEY_API_KEY = "api_key";
     private static final String X = APIRequestGateway.class.getSimpleName();
+    private static final String KEY_ID = "id";
+
 
     private static String getDeviceName() {
         final String manufacturer = Build.MANUFACTURER;
@@ -40,10 +42,19 @@ public class APIRequestGateway {
         }
     }
 
+    @Override
+    public void onAllPermissionGranted() {
+        execute();
+    }
+
+    @Override
+    public void onPermissionDenial() {
+        Log.e(X, "Permission not granted");
+    }
 
 
     public interface APIRequestGatewayCallback {
-        void onReadyToRequest(final String apiKey);
+        void onReadyToRequest(final String apiKey, final String id);
 
         void onFailed(final String reason);
     }
@@ -55,7 +66,7 @@ public class APIRequestGateway {
     public APIRequestGateway(Context context, @NonNull APIRequestGatewayCallback callback) {
         this.context = context;
         this.callback = callback;
-        execute();
+        new PermissionUtils(context, this, null).begin();
     }
 
 
@@ -85,7 +96,7 @@ public class APIRequestGateway {
 
         //Attaching them with the request
         final Request inRequest = new APIRequestBuilder("/get_api_key")
-                .addParam("company_code", App.getCompanyCode(context))
+                .addParam("company_code", App.getCompanyCode())
                 .addParamIfNotNull("name", name)
                 .addParam("device_hash", deviceHash)
                 .addParam("imei", imei)
@@ -107,17 +118,19 @@ public class APIRequestGateway {
                 try {
 
                     final APIResponse inResp = new APIResponse(OkHttpUtils.logAndGetStringBody(response));
-                    final String apiKey = inResp.getJSONObjectData().getString(KEY_API_KEY);
-
+                    final JSONObject joData = inResp.getJSONObjectData();
+                    final String apiKey = joData.getString(KEY_API_KEY);
+                    final String id = joData.getString(KEY_ID);
 
                     //Saving in preference
                     final SharedPreferences.Editor editor = prefUtils.getEditor();
                     editor.putString(KEY_API_KEY, apiKey);
+                    editor.putString(KEY_ID, id);
                     editor.putBoolean(Employee.KEY_IS_FCM_SYNCED, true);
 
                     editor.commit();
 
-                    callback.onReadyToRequest(apiKey);
+                    callback.onReadyToRequest(apiKey, id);
 
                 } catch (JSONException | APIResponse.APIException e) {
                     e.printStackTrace();
@@ -139,12 +152,13 @@ public class APIRequestGateway {
 
             final PrefUtils prefUtils = PrefUtils.getInstance(context);
             final String apiKey = prefUtils.getString(KEY_API_KEY);
+            final String id = prefUtils.getString(KEY_ID);
 
             if (apiKey != null) {
 
                 Log.d(X, "hasApiKey " + apiKey);
 
-                callback.onReadyToRequest(apiKey);
+                callback.onReadyToRequest(apiKey, id);
 
             } else {
 

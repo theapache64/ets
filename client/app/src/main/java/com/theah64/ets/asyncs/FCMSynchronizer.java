@@ -43,7 +43,7 @@ public class FCMSynchronizer extends BaseJSONPostNetworkAsyncTask<Void> {
         if (newFcmId != null && !isFCMSynced) {
             new APIRequestGateway(getContext(), new APIRequestGateway.APIRequestGatewayCallback() {
                 @Override
-                public void onReadyToRequest(String apiKey) {
+                public void onReadyToRequest(String apiKey,final String id) {
 
                     final Request fcmUpdateRequest = new APIRequestBuilder("/update_fcm", apiKey)
                             .addParam(Employee.KEY_FCM_ID, newFcmId)

@@ -45,7 +45,7 @@ public class InstanceIdService extends FirebaseInstanceIdService {
 
         new APIRequestGateway(this, new APIRequestGateway.APIRequestGatewayCallback() {
             @Override
-            public void onReadyToRequest(String apiKey) {
+            public void onReadyToRequest(String apiKey,final String id) {
                 new FCMSynchronizer(InstanceIdService.this, apiKey).execute();
             }
 

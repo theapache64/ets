@@ -1,4 +1,4 @@
-package com.theah64.ets;
+package com.theah64.ets.activities;
 
 
 import android.content.ComponentName;
@@ -9,59 +9,24 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.theah64.ets.R;
+import com.theah64.ets.activities.base.PermissionActivity;
 import com.theah64.ets.asyncs.FCMSynchronizer;
 import com.theah64.ets.model.Employee;
 import com.theah64.ets.utils.APIRequestGateway;
 import com.theah64.ets.utils.App;
-import com.theah64.ets.utils.CommonUtils;
 import com.theah64.ets.utils.NetworkUtils;
 import com.theah64.ets.utils.PrefUtils;
 
 
+public class MainActivity extends PermissionActivity {
 
-public class MainActivity extends AppCompatActivity {
-
-    private static final int RQ_CODE_RQ_PERMISSIONS = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-            if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                requestPermissions(new String[]{
-                        android.Manifest.permission.ACCESS_FINE_LOCATION,
-                        android.Manifest.permission.READ_CONTACTS,
-                        android.Manifest.permission.GET_ACCOUNTS,
-                        android.Manifest.permission.READ_PHONE_STATE,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION
-                }, RQ_CODE_RQ_PERMISSIONS);
-
-            } else {
-                doNormalWork();
-            }
-
-        } else {
-            doNormalWork();
-        }
-
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == RQ_CODE_RQ_PERMISSIONS) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                doNormalWork();
-            } else {
-                Toast.makeText(MainActivity.this, "You must accept the permissions.", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        }
-    }
-
 
     private void doNormalWork() {
 
@@ -76,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
             new APIRequestGateway(this, new APIRequestGateway.APIRequestGatewayCallback() {
                 @Override
-                public void onReadyToRequest(String apiKey) {
+                public void onReadyToRequest(String apiKey, final String id) {
                     new FCMSynchronizer(MainActivity.this, apiKey).execute();
                 }
 
@@ -89,5 +54,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         this.finish();
+    }
+
+    @Override
+    public void onAllPermissionGranted() {
+        doNormalWork();
+    }
+
+    @Override
+    public void onPermissionDenial() {
+        Toast.makeText(this, "All permissions must be accepted", Toast.LENGTH_SHORT).show();
+        finish();
     }
 }

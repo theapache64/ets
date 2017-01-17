@@ -11,6 +11,10 @@ import org.json.JSONObject;
  */
 public class APIResponse {
 
+    public static final String KEY_MESSAGE = "message";
+    public static final String KEY_ERROR = "error";
+    public static final String KEY_ERROR_CODE = "error_code";
+    public static final String KEY_DATA = "data";
     private final String message;
     private final JSONObject joMain;
 
@@ -18,10 +22,10 @@ public class APIResponse {
 
         try {
             joMain = new JSONObject(stringResp);
-            this.message = joMain.getString("message");
+            this.message = joMain.getString(KEY_MESSAGE);
 
-            if (joMain.getBoolean("error")) {
-                final int errorCode = joMain.getInt("error_code");
+            if (joMain.getBoolean(KEY_ERROR)) {
+                final int errorCode = joMain.getInt(KEY_ERROR_CODE);
                 throw new APIException(errorCode, message);
             }
 
@@ -34,7 +38,7 @@ public class APIResponse {
     }
 
     JSONObject getJSONObjectData() throws JSONException {
-        return joMain.getJSONObject("data");
+        return joMain.getJSONObject(KEY_DATA);
     }
 
 
