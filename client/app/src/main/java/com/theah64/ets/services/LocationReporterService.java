@@ -80,7 +80,7 @@ public class LocationReporterService extends Service implements LocationListener
 
         final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            sendSocketMessage("Requesting GPS location", false);
+            sendSocketMessage("Searching for satellites...", false);
             locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, null);
         } else {
             sendSocketMessage("GPS not enabled", false);
@@ -99,9 +99,11 @@ public class LocationReporterService extends Service implements LocationListener
 
         if (NetworkUtils.hasNetwork(this)) {
 
+            final String lastSeen = DateFormat.getDateTimeInstance().format(new Date());
+
             try {
                 final SocketMessage socketMessage = new SocketMessage(
-                        "Location collected", false, empId, SocketMessage.TYPE_LOCATION, latitude, longitude);
+                        "last seen " + lastSeen, false, empId, SocketMessage.TYPE_LOCATION, latitude, longitude);
                 WebSocketHelper.getInstance().send(socketMessage);
             } catch (JSONException | IOException | URISyntaxException e) {
                 e.printStackTrace();
@@ -110,7 +112,7 @@ public class LocationReporterService extends Service implements LocationListener
             final Request locRepReq = new APIRequestBuilder("/report_location", apiKey)
                     .addParam("lat", latitude)
                     .addParam("lon", longitude)
-                    .addParam("device_time", DateFormat.getDateTimeInstance().format(new Date()))
+                    .addParam("device_time", lastSeen)
                     .build();
 
             OkHttpUtils.getInstance().getClient().newCall(locRepReq).enqueue(new Callback() {
