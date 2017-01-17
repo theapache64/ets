@@ -48,7 +48,7 @@ public class BaseTable<T> {
         throw new IllegalArgumentException(ERROR_MESSAGE_UNDEFINED_METHOD);
     }
 
-    public String addv3(T newInstance) {
+    public String addv3(T newInstance) throws InsertFailedException {
         throw new IllegalArgumentException(ERROR_MESSAGE_UNDEFINED_METHOD);
     }
 

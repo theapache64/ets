@@ -9,6 +9,7 @@ import com.theah64.ets.api.utils.APIResponse;
 import com.theah64.ets.api.utils.RandomString;
 import com.theah64.ets.api.utils.Request;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -72,14 +73,19 @@ public class GetAPIKeyServlet extends AdvancedBaseServlet {
                 final String apiKey = RandomString.getNewApiKey(API_KEY_LENGTH);
                 final String empCode = RandomString.getRandomString(EMP_CODE_LENGTH);
 
-                emp = new Employee(null, name, imei, deviceHash, fcmId, apiKey, companyId, empCode, null);
-                empTable.add(emp);
+                emp = new Employee(null, name, imei, deviceHash, fcmId, apiKey, companyId, empCode, null, true);
+                final String empId = empTable.addv3(emp);
+                emp.setId(empId);
             }
 
             System.out.println("Employee: " + emp);
 
+            final JSONObject joData = new JSONObject();
+            joData.put(Employees.COLUMN_API_KEY, emp.getApiKey());
+            joData.put(Employees.COLUMN_ID, emp.getId());
+
             //Finally showing api key
-            getWriter().write(new APIResponse("Verified employee", Employees.COLUMN_API_KEY, emp.getApiKey()).getResponse());
+            getWriter().write(new APIResponse("Verified employee", joData).getResponse());
 
         } else {
             throw new Request.RequestException("Company doesn't exist : " + companyCode);

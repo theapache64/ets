@@ -2,7 +2,6 @@ package com.theah64.ets.api.database.tables;
 
 import com.theah64.ets.api.database.Connection;
 import com.theah64.ets.api.models.Employee;
-import com.theah64.ets.api.models.Location;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -50,14 +49,19 @@ public class Employees extends BaseTable<Employee> {
 
     @Override
     public void add(Employee newEmp) throws InsertFailedException {
-        boolean isFailed = false;
+
+    }
+
+    @Override
+    public String addv3(Employee newEmp) throws InsertFailedException {
+        String empId = null;
         final String query = "INSERT INTO employees (company_id, name, imei,device_hash, fcm_id, api_key,code) VALUES (?,?,?,?,?,?,?); ";
 
         final java.sql.Connection con = Connection.getConnection();
 
         try {
 
-            final PreparedStatement ps = con.prepareStatement(query);
+            final PreparedStatement ps = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
             ps.setString(1, newEmp.getCompanyId());
             ps.setString(2, newEmp.getName());
@@ -66,13 +70,18 @@ public class Employees extends BaseTable<Employee> {
             ps.setString(5, newEmp.getFcmId());
             ps.setString(6, newEmp.getApiKey());
             ps.setString(7, newEmp.getEmpCode());
+            ps.executeUpdate();
 
-            isFailed = ps.executeUpdate() != 1;
+            final ResultSet rs = ps.getGeneratedKeys();
+            if (rs.first()) {
+                empId = rs.getString(1);
+            }
+
+            rs.close();
             ps.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
-            isFailed = true;
         } finally {
             try {
                 con.close();
@@ -81,15 +90,16 @@ public class Employees extends BaseTable<Employee> {
             }
         }
 
-        if (isFailed) {
+        if (empId == null) {
             throw new InsertFailedException("Failed to add new employee");
         }
+        return empId;
     }
 
     @Override
     public Employee get(String column1, String value1) {
         Employee emp = null;
-        final String query = String.format("SELECT id, fcm_id, api_key FROM employees WHERE %s = ?", column1);
+        final String query = String.format("SELECT id, fcm_id, api_key,is_active FROM employees WHERE %s = ?", column1);
         final java.sql.Connection con = Connection.getConnection();
         try {
             final PreparedStatement ps = con.prepareStatement(query);
@@ -102,7 +112,9 @@ public class Employees extends BaseTable<Employee> {
                 final String id = rs.getString(COLUMN_ID);
                 final String fcmId = rs.getString(COLUMN_FCM_ID);
                 final String apiKey = rs.getString(COLUMN_API_KEY);
-                emp = new Employee(id, null, null, null, fcmId, apiKey, null, null, null);
+                final boolean isActive = rs.getBoolean(COLUMN_IS_ACTIVE);
+
+                emp = new Employee(id, null, null, null, fcmId, apiKey, null, null, null, isActive);
             }
 
             rs.close();
@@ -123,7 +135,7 @@ public class Employees extends BaseTable<Employee> {
 
         List<Employee> employeeList = null;
 
-        final StringBuilder queryBuilder = new StringBuilder(String.format("SELECT name, code, fcm_id FROM employees WHERE %s IN (", whereInColumn));
+        final StringBuilder queryBuilder = new StringBuilder(String.format("SELECT name, code, fcm_id,is_active FROM employees WHERE %s IN (", whereInColumn));
 
         for (int i = 0; i < whereInValues.length(); i++) {
             queryBuilder.append("'").append(whereInValues.getString(i)).append("'");
@@ -147,8 +159,9 @@ public class Employees extends BaseTable<Employee> {
                     final String name = rs.getString(COLUMN_NAME);
                     final String empCode = rs.getString(COLUMN_CODE);
                     final String fcmId = rs.getString(COLUMN_FCM_ID);
+                    final boolean isActive = rs.getBoolean(COLUMN_IS_ACTIVE);
 
-                    employeeList.add(new Employee(null, name, null, null, fcmId, null, null, empCode, null));
+                    employeeList.add(new Employee(null, name, null, null, fcmId, null, null, empCode, null, isActive));
 
                 } while (rs.next());
             }
@@ -174,7 +187,7 @@ public class Employees extends BaseTable<Employee> {
 
         List<Employee> employeeList = null;
 
-        final String query = "SELECT e.id,e.name,e.code, e.fcm_id FROM employees e WHERE e.company_id = ? AND !ISNULL(e.fcm_id);";
+        final String query = "SELECT e.id,e.name,e.code, e.fcm_id,e.is_active FROM employees e WHERE e.company_id = ? AND !ISNULL(e.fcm_id);";
         final java.sql.Connection con = Connection.getConnection();
 
         try {
@@ -192,10 +205,11 @@ public class Employees extends BaseTable<Employee> {
                     final String name = rs.getString(COLUMN_NAME);
                     final String empCode = rs.getString(COLUMN_CODE);
                     final String fcmId = rs.getString(COLUMN_FCM_ID);
+                    final boolean isActive = rs.getBoolean(COLUMN_IS_ACTIVE);
 
                     employeeList.add(new Employee(
                             id, name, null, null,
-                            fcmId, null, null, empCode, isLastKnownLocationNeeded ? locationHistories.getLastKnownLocation(id) : null));
+                            fcmId, null, null, empCode, isLastKnownLocationNeeded ? locationHistories.getLastKnownLocation(id) : null, isActive));
 
                 } while (rs.next());
             }

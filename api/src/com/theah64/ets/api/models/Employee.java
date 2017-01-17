@@ -13,10 +13,18 @@ package com.theah64.ets.api.models;
  * created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
  */
 public class Employee {
-    private final String id, name, imei, deviceHash, fcmId, apiKey, companyId,empCode;
+    private String id;
+    private final String name;
+    private final String imei;
+    private final String deviceHash;
+    private final String fcmId;
+    private final String apiKey;
+    private final String companyId;
+    private final String empCode;
     private final Location lastKnownLocation;
+    private final boolean isActive;
 
-    public Employee(String id, String name, String imei, String deviceHash, String fcmId, String apiKey, String companyId, String empCode, Location lastKnownLocation) {
+    public Employee(String id, String name, String imei, String deviceHash, String fcmId, String apiKey, String companyId, String empCode, Location lastKnownLocation, boolean isActive) {
         this.id = id;
         this.name = name;
         this.imei = imei;
@@ -26,6 +34,11 @@ public class Employee {
         this.companyId = companyId;
         this.empCode = empCode;
         this.lastKnownLocation = lastKnownLocation;
+        this.isActive = isActive;
+    }
+
+    public boolean isActive() {
+        return isActive;
     }
 
     public String getId() {
@@ -77,5 +90,9 @@ public class Employee {
                 ", empCode='" + empCode + '\'' +
                 ", lastKnownLocation=" + lastKnownLocation +
                 '}';
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
