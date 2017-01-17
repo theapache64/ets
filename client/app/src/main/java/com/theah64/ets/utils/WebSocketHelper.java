@@ -77,6 +77,17 @@ public class WebSocketHelper {
             return webSocketClient;
         }
 
+        if (webSocketClient.getConnection().isClosed()) {
+            //Reopening
+            Log.d(X, "Reopening socket");
+            try {
+                instance = new WebSocketHelper();
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
         Log.e(X, "SOCKET NOT OPENED");
         return null;
     }
