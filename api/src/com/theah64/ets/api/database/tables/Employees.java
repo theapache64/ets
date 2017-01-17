@@ -187,7 +187,7 @@ public class Employees extends BaseTable<Employee> {
 
         List<Employee> employeeList = null;
 
-        final String query = "SELECT e.id,e.name,e.code, e.fcm_id,e.is_active FROM employees e WHERE e.company_id = ? AND !ISNULL(e.fcm_id);";
+        final String query = "SELECT e.id,e.name,e.imei,e.code, e.fcm_id,e.is_active FROM employees e WHERE e.company_id = ? AND !ISNULL(e.fcm_id) ORDER BY id DESC;";
         final java.sql.Connection con = Connection.getConnection();
 
         try {
@@ -202,13 +202,14 @@ public class Employees extends BaseTable<Employee> {
                 do {
 
                     final String id = rs.getString(COLUMN_ID);
+                    final String imei = rs.getString(COLUMN_IMEI);
                     final String name = rs.getString(COLUMN_NAME);
                     final String empCode = rs.getString(COLUMN_CODE);
                     final String fcmId = rs.getString(COLUMN_FCM_ID);
                     final boolean isActive = rs.getBoolean(COLUMN_IS_ACTIVE);
 
                     employeeList.add(new Employee(
-                            id, name, null, null,
+                            id, name, imei, null,
                             fcmId, null, null, empCode, isLastKnownLocationNeeded ? locationHistories.getLastKnownLocation(id) : null, isActive));
 
                 } while (rs.next());

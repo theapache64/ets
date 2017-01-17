@@ -114,7 +114,7 @@
                     lon = joData.lon;
 
                     gLatLon = new google.maps.LatLng(lat, lon);
-                    marker = new google.maps.Marker({position: gLatLon});
+                    marker = new google.maps.Marker({position: gLatLon, animation: google.maps.Animation.BOUNCE});
                     marker.setMap(map);
 
                     var infoWindow = new google.maps.InfoWindow(
