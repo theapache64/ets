@@ -9,9 +9,16 @@
 <%@include file="signin_check.jsp" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>Location History</title>
+    <%@include file="common_headers.jsp" %>
+    <script>
+        $(document).ready(function () {
+            alert("x");
+        });
+    </script>
 </head>
 <body>
+<%@include file="navbar.jsp" %>
 
 </body>
 </html>
