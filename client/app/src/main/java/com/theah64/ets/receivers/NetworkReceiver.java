@@ -56,7 +56,7 @@ public class NetworkReceiver extends BroadcastReceiver {
                 public void onReadyToRequest(String apiKey, final String id) {
 
                     try {
-                        WebSocketHelper.getInstance().send(new SocketMessage("Device connected to the server", id));
+                        WebSocketHelper.getInstance(context).send(new SocketMessage("Device connected to the server", id));
                     } catch (URISyntaxException | IOException | JSONException e) {
                         e.printStackTrace();
                     }

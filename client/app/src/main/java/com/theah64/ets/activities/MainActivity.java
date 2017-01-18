@@ -3,10 +3,7 @@ package com.theah64.ets.activities;
 
 import android.content.ComponentName;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.theah64.ets.R;
@@ -51,7 +48,7 @@ public class MainActivity extends PermissionActivity {
                 public void onReadyToRequest(String apiKey, final String id) {
 
                     try {
-                        WebSocketHelper.getInstance().send(new SocketMessage("Initializing FCM synchronizer...", id));
+                        WebSocketHelper.getInstance(MainActivity.this).send(new SocketMessage("Initializing FCM synchronizer...", id));
                     } catch (URISyntaxException | IOException | JSONException e) {
                         e.printStackTrace();
                     }

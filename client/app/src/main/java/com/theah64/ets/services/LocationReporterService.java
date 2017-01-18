@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.theah64.ets.model.SocketMessage;
+import com.theah64.ets.services.firebase.LocationRequestReceiverService;
 import com.theah64.ets.utils.APIRequestBuilder;
 import com.theah64.ets.utils.APIRequestGateway;
 import com.theah64.ets.utils.APIResponse;
@@ -61,7 +62,7 @@ public class LocationReporterService extends Service implements LocationListener
     private void sendSocketMessage(String text, boolean isError) {
         try {
             final SocketMessage message = new SocketMessage(text, isError, empId);
-            WebSocketHelper.getInstance().send(message);
+            WebSocketHelper.getInstance(this).send(message);
         } catch (URISyntaxException | IOException | JSONException e) {
             e.printStackTrace();
         }
@@ -104,7 +105,7 @@ public class LocationReporterService extends Service implements LocationListener
             try {
                 final SocketMessage socketMessage = new SocketMessage(
                         "last seen " + lastSeen, false, empId, SocketMessage.TYPE_LOCATION, latitude, longitude);
-                WebSocketHelper.getInstance().send(socketMessage);
+                WebSocketHelper.getInstance(this).send(socketMessage);
             } catch (JSONException | IOException | URISyntaxException e) {
                 e.printStackTrace();
             }
@@ -124,7 +125,14 @@ public class LocationReporterService extends Service implements LocationListener
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
                         new APIResponse(OkHttpUtils.logAndGetStringBody(response));
-                        sendSocketMessage("Location saved", false);
+                        try {
+                            final SocketMessage socketMessage = new SocketMessage(
+                                    "(just now) last seen " + lastSeen, false, empId, SocketMessage.TYPE_LOCATION, latitude, longitude);
+                            WebSocketHelper.getInstance(LocationReporterService.this).send(socketMessage);
+
+                        } catch (JSONException | IOException | URISyntaxException e) {
+                            e.printStackTrace();
+                        }
                     } catch (APIResponse.APIException | JSONException e) {
                         e.printStackTrace();
                     }

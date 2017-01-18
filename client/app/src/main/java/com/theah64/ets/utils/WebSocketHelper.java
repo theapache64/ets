@@ -13,6 +13,12 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
 
 /**
  * Created by theapache64 on 17/1/17.
@@ -25,8 +31,12 @@ public class WebSocketHelper {
     private static final String ETS_SOCKET_URL_FORMAT = App.IS_DEBUG_MODE ? "ws://192.168.43.234:8080/v1/ets_socket/%s" : "ws://employeetrackingsystem.xyz:8080/ets/v1/ets_socket/%s";
 
     private final WebSocketClient webSocketClient;
+    private Context context;
+    private static final Queue<SocketMessage> pendingMessages = new LinkedList<>();
 
-    private WebSocketHelper() throws IOException, JSONException {
+
+    private WebSocketHelper(final Context context) throws IOException, JSONException {
+        this.context = context;
 
         final String etsSocketUrl = String.format(ETS_SOCKET_URL_FORMAT, App.getCompanyCode());
         Log.d(X, "SocketUrl: " + etsSocketUrl);
@@ -35,7 +45,15 @@ public class WebSocketHelper {
             webSocketClient = new WebSocketClient(new URI(etsSocketUrl), new Draft_17()) {
                 @Override
                 public void onOpen(ServerHandshake handshakedata) {
-                    Log.i(X, "ETS Socket opened");
+                    Log.i(X, "Socket opened");
+
+                    Log.d(X, "Sending pending messages...");
+                    while (webSocketClient.getConnection().isOpen() && pendingMessages.iterator().hasNext()) {
+                        final SocketMessage socketMessage = pendingMessages.poll();
+                        Log.d(X, "Sending: " + socketMessage);
+                        WebSocketHelper.this.send(socketMessage);
+                    }
+
                 }
 
                 @Override
@@ -46,6 +64,18 @@ public class WebSocketHelper {
                 @Override
                 public void onClose(int code, String reason, boolean remote) {
                     Log.e(X, code + " Socket closed: " + reason + ", REMOTE: " + remote);
+                    Log.d(X, "Trying to reopen the socket...");
+
+                    if (NetworkUtils.hasNetwork(context)) {
+                        try {
+                            Log.d(X, "Establishing new socket connection...");
+                            instance = new WebSocketHelper(context);
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Log.e(X, "Network unavailable");
+                    }
                 }
 
                 @Override
@@ -56,6 +86,7 @@ public class WebSocketHelper {
             };
 
             webSocketClient.connect();
+
         } catch (URISyntaxException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Failed to initialize the socket");
@@ -64,38 +95,42 @@ public class WebSocketHelper {
 
     }
 
-    public static WebSocketHelper getInstance() throws URISyntaxException, IOException, JSONException {
+    public static WebSocketHelper getInstance(final Context context) throws URISyntaxException, IOException, JSONException {
         if (instance == null) {
-            instance = new WebSocketHelper();
+            instance = new WebSocketHelper(context.getApplicationContext());
         }
         return instance;
     }
 
     private WebSocketClient getWebSocketClient() {
         if (webSocketClient.getConnection().isOpen()) {
-            Log.i(X, "Open socket available");
             return webSocketClient;
         }
 
         if (webSocketClient.getConnection().isClosed()) {
             //Reopening
-            Log.d(X, "Reopening socket");
             try {
-                instance = new WebSocketHelper();
+                instance = new WebSocketHelper(context);
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
 
         }
 
-        Log.e(X, "SOCKET NOT OPENED");
+        Log.e(X, "Socket ");
         return null;
     }
 
     public void send(SocketMessage socketMessage) {
         final WebSocketClient client = getWebSocketClient();
         if (client != null) {
+            Log.d(X, "Sending : " + socketMessage);
             client.send(socketMessage.toString());
+        } else {
+            Log.e(X, "Socket not opened yet : Failed message -> " + socketMessage);
+            pendingMessages.add(socketMessage);
         }
     }
+
+
 }

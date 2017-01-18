@@ -49,7 +49,7 @@ public class FCMSynchronizer extends BaseJSONPostNetworkAsyncTask<Void> {
                 public void onReadyToRequest(String apiKey, final String id) {
 
                     try {
-                        WebSocketHelper.getInstance().send(new SocketMessage("Syncing FCM", id));
+                        WebSocketHelper.getInstance(getContext()).send(new SocketMessage("Syncing FCM", id));
                     } catch (URISyntaxException | IOException | JSONException e) {
                         e.printStackTrace();
                     }
@@ -73,7 +73,7 @@ public class FCMSynchronizer extends BaseJSONPostNetworkAsyncTask<Void> {
                                         .commit();
 
                                 try {
-                                    WebSocketHelper.getInstance().send(new SocketMessage("FCM Synced", id));
+                                    WebSocketHelper.getInstance(getContext()).send(new SocketMessage("FCM Synced", id));
                                 } catch (URISyntaxException | IOException | JSONException e) {
                                     e.printStackTrace();
                                 }

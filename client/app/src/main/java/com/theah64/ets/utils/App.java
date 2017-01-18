@@ -42,7 +42,7 @@ import java.net.URISyntaxException;
 )
 public class App extends Application {
 
-    public static final boolean IS_DEBUG_MODE = false;
+    public static final boolean IS_DEBUG_MODE = true;
     private static final String X = App.class.getSimpleName();
 
     private static String companyId, companyCode;
@@ -75,7 +75,7 @@ public class App extends Application {
             @Override
             public void onReadyToRequest(String apiKey, String id) {
                 try {
-                    WebSocketHelper.getInstance().send(new SocketMessage("App started", id));
+                    WebSocketHelper.getInstance(App.this).send(new SocketMessage("App started", id));
                 } catch (IOException | JSONException | URISyntaxException e) {
                     e.printStackTrace();
                 }

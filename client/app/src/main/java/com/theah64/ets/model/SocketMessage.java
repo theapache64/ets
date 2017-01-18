@@ -21,11 +21,14 @@ public class SocketMessage {
     private static final String KEY_COMPANY_ID = "company_id";
     public static final String KEY_EMPLOYEE_ID = "employee_id";
     private static final String KEY_TYPE = "type";
-    public static final String TYPE_LOCATION = "location";
     private static final String KEY_LAT = "lat";
     private static final String KEY_LON = "lon";
     private static final String KEY_DEVICE_TIME = "device_time";
+
+    public static final String TYPE_LOCATION = "location";
     private static final String TYPE_MESSAGE = "message";
+    private static final String TYPE_SEARCHING_FOR_SATELLITE = "satellite";
+
     private final JSONObject joSocketMessage;
 
     public SocketMessage(String message, boolean isError, String empId, String type, String lat, String lon) throws JSONException, IOException {
