@@ -98,14 +98,6 @@ public class LocationReporterService extends Service implements LocationListener
 
             final String lastSeen = DateFormat.getDateTimeInstance().format(new Date());
 
-            try {
-                final SocketMessage socketMessage = new SocketMessage(
-                        "last seen " + lastSeen, false, empId, SocketMessage.TYPE_LOCATION, latitude, longitude);
-                WebSocketHelper.getInstance(this).send(socketMessage);
-            } catch (JSONException | IOException | URISyntaxException e) {
-                e.printStackTrace();
-            }
-
             final Request locRepReq = new APIRequestBuilder("/report_location", apiKey)
                     .addParam("lat", latitude)
                     .addParam("lon", longitude)

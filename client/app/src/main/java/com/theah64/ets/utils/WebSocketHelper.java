@@ -50,7 +50,6 @@ public class WebSocketHelper {
                     Log.d(X, "Sending pending messages...");
                     while (webSocketClient.getConnection().isOpen() && pendingMessages.iterator().hasNext()) {
                         final SocketMessage socketMessage = pendingMessages.poll();
-                        Log.d(X, "Sending: " + socketMessage);
                         WebSocketHelper.this.send(socketMessage);
                     }
 
