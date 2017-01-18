@@ -58,6 +58,7 @@ public class ETSSocket {
                         }
                     }
                 }
+
             } else {
                 throw new JSONException(joResp.getString(APIResponse.KEY_MESSAGE));
             }

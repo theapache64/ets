@@ -47,6 +47,9 @@ public class FCMUtils {
 
 
         try {
+
+            System.out.println("To FCM: " + payload);
+
             final URL url = new URL(FCM_SEND_URL);
             final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.addRequestProperty("Authorization", "key=" + FCM_NOTIFICATION_KEY);
@@ -67,6 +70,8 @@ public class FCMUtils {
             }
 
             br.close();
+
+            System.out.println("FCM Says : " + response.toString());
 
             return new JSONObject(response.toString());
 

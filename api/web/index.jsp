@@ -21,7 +21,7 @@
 
         var map;
         var markers = [];
-
+        var locations = [];
 
         $(document).ready(function () {
 
@@ -143,13 +143,16 @@
 
                     markers[employeeId] = marker;
 
+                    //Adding location
+                    var poly = locations[employeeId].getPath();
+                    poly.push(gLatLon);
                 }
 
                 $(empDivId).find("p.employee_status").text(message);
             };
 
             webSocket.onclose = function (evnt) {
-                log("Socket closed: " + evnt.data);
+                log("Socket closed");
             };
 
             webSocket.onerror = function (evnt) {
@@ -160,6 +163,13 @@
                 $("p#ws_status").text(message);
             }
 
+            $("a.openGMaps").click(function () {
+                var emp = $(this).parent();
+                var lat = $(emp).data("lat");
+                var lon = $(emp).data("lon");
+                var url = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat + "+ " + lon;
+                window.open(url, '_blank');
+            });
 
         });
     </script>
@@ -198,8 +208,10 @@
                  data-last-seen="<%=loc!=null ? loc.getDeviceTime() : ""%>">
                 <p class="employee_name"><strong><%=employee.getName()%>
                 </strong></p>
-                <p class="employee_status"><%=loc != null ? "last seen " + loc.getDeviceTime() : "NEVER SEEN"%>
+                <p class="employee_status">
+                    <%=loc != null ? "last seen " + loc.getDeviceTime() : "NEVER SEEN"%>
                 </p>
+                <%=loc != null ? "<a class=\"openGMaps\" target=\"_blank\">(view)</a>" : ""%>
                 <button data-emp-code="<%=employee.getEmpCode()%>" type="button" class="btn"><span
                         class="glyphicon glyphicon-refresh"></span>
                 </button>
@@ -211,10 +223,11 @@
                 }
             %>
 
+
         </div>
 
         <!--Map-->
-        <div class="col-md-9">
+        <div class="col-md-9" style="padding: 0px;">
             <div id="map" style="width: 100%;height: 89%    ;">
 
             </div>
@@ -231,7 +244,7 @@
         var mapOptions = {
             center: dubai,
             zoom: 10
-        }
+        };
 
         map = new google.maps.Map(mapCanvas, mapOptions);
 
@@ -240,6 +253,7 @@
         console.log("Found " + employees.length + " employee(s)");
 
         for (var i = 0; i < employees.length; i++) {
+
 
             var name = $(employees[i]).data("name");
             var lat = $(employees[i]).data("lat");
@@ -254,7 +268,11 @@
 
             //Setting marker
             var gLatLon = new google.maps.LatLng(lat, lon);
-            var marker = new google.maps.Marker({position: gLatLon});
+            var marker = new google.maps.Marker({
+                position: gLatLon,
+                animation: google.maps.Animation.DROP
+            });
+
             marker.setMap(map);
 
             //Building info window with employee name
@@ -272,8 +290,18 @@
             //Saving marker
             var empId = $(employees[i]).attr("id");
             markers[empId] = marker;
-            console.log("markers: " + markers.length);
+
+            //Drawing path
+            var poly = new google.maps.Polyline({
+                strokeColor: '#000000',
+                strokeOpacity: 1.0,
+                strokeWeight: 3
+            });
+
+            poly.setMap(map);
+            locations[empId] = poly;
         }
+
 
         function setMarker(marker) {
 
