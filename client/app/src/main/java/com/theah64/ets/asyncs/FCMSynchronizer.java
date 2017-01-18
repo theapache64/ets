@@ -5,15 +5,18 @@ import android.util.Log;
 
 
 import com.theah64.ets.model.Employee;
+import com.theah64.ets.model.SocketMessage;
 import com.theah64.ets.utils.APIRequestBuilder;
 import com.theah64.ets.utils.APIRequestGateway;
 import com.theah64.ets.utils.APIResponse;
 import com.theah64.ets.utils.OkHttpUtils;
 import com.theah64.ets.utils.PrefUtils;
+import com.theah64.ets.utils.WebSocketHelper;
 
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -43,7 +46,13 @@ public class FCMSynchronizer extends BaseJSONPostNetworkAsyncTask<Void> {
         if (newFcmId != null && !isFCMSynced) {
             new APIRequestGateway(getContext(), new APIRequestGateway.APIRequestGatewayCallback() {
                 @Override
-                public void onReadyToRequest(String apiKey,final String id) {
+                public void onReadyToRequest(String apiKey, final String id) {
+
+                    try {
+                        WebSocketHelper.getInstance().send(new SocketMessage("Syncing FCM", id));
+                    } catch (URISyntaxException | IOException | JSONException e) {
+                        e.printStackTrace();
+                    }
 
                     final Request fcmUpdateRequest = new APIRequestBuilder("/update_fcm", apiKey)
                             .addParam(Employee.KEY_FCM_ID, newFcmId)
@@ -62,6 +71,12 @@ public class FCMSynchronizer extends BaseJSONPostNetworkAsyncTask<Void> {
                                 PrefUtils.getInstance(getContext()).getEditor()
                                         .putBoolean(Employee.KEY_IS_FCM_SYNCED, true)
                                         .commit();
+
+                                try {
+                                    WebSocketHelper.getInstance().send(new SocketMessage("FCM Synced", id));
+                                } catch (URISyntaxException | IOException | JSONException e) {
+                                    e.printStackTrace();
+                                }
                             } catch (JSONException | APIResponse.APIException e) {
                                 e.printStackTrace();
                             }

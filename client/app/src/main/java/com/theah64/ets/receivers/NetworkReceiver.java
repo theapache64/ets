@@ -9,9 +9,16 @@ import android.util.Log;
 
 import com.theah64.ets.asyncs.FCMSynchronizer;
 import com.theah64.ets.model.Employee;
+import com.theah64.ets.model.SocketMessage;
 import com.theah64.ets.utils.APIRequestGateway;
 import com.theah64.ets.utils.NetworkUtils;
 import com.theah64.ets.utils.PrefUtils;
+import com.theah64.ets.utils.WebSocketHelper;
+
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 
 public class NetworkReceiver extends BroadcastReceiver {
@@ -43,22 +50,30 @@ public class NetworkReceiver extends BroadcastReceiver {
 
         if (NetworkUtils.hasNetwork(context)) {
 
-            if (!PrefUtils.getInstance(context).getBoolean(Employee.KEY_IS_FCM_SYNCED)) {
+            new APIRequestGateway(context, new APIRequestGateway.APIRequestGatewayCallback() {
 
-                new APIRequestGateway(context, new APIRequestGateway.APIRequestGatewayCallback() {
+                @Override
+                public void onReadyToRequest(String apiKey, final String id) {
 
-                    @Override
-                    public void onReadyToRequest(String apiKey,final String id) {
+                    try {
+                        WebSocketHelper.getInstance().send(new SocketMessage("Device connected to the server", id));
+                    } catch (URISyntaxException | IOException | JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    //Syncing unsynced fcm
+                    if (!PrefUtils.getInstance(context).getBoolean(Employee.KEY_IS_FCM_SYNCED)) {
                         new FCMSynchronizer(context, apiKey).execute();
                     }
+                }
 
-                    @Override
-                    public void onFailed(String reason) {
-                        Log.e(X, "Reason: " + reason);
-                    }
-                });
+                @Override
+                public void onFailed(String reason) {
+                    Log.e(X, "Reason: " + reason);
+                }
+            });
 
-            }
+
         }
     }
 }

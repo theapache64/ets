@@ -13,10 +13,17 @@ import com.theah64.ets.R;
 import com.theah64.ets.activities.base.PermissionActivity;
 import com.theah64.ets.asyncs.FCMSynchronizer;
 import com.theah64.ets.model.Employee;
+import com.theah64.ets.model.SocketMessage;
 import com.theah64.ets.utils.APIRequestGateway;
 import com.theah64.ets.utils.App;
 import com.theah64.ets.utils.NetworkUtils;
 import com.theah64.ets.utils.PrefUtils;
+import com.theah64.ets.utils.WebSocketHelper;
+
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 
 public class MainActivity extends PermissionActivity {
@@ -42,6 +49,13 @@ public class MainActivity extends PermissionActivity {
             new APIRequestGateway(this, new APIRequestGateway.APIRequestGatewayCallback() {
                 @Override
                 public void onReadyToRequest(String apiKey, final String id) {
+
+                    try {
+                        WebSocketHelper.getInstance().send(new SocketMessage("Initializing FCM synchronizer...", id));
+                    } catch (URISyntaxException | IOException | JSONException e) {
+                        e.printStackTrace();
+                    }
+
                     new FCMSynchronizer(MainActivity.this, apiKey).execute();
                 }
 
