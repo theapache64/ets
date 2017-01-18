@@ -26,8 +26,8 @@ public class SocketMessage {
     private static final String KEY_DEVICE_TIME = "device_time";
 
     public static final String TYPE_LOCATION = "location";
-    private static final String TYPE_MESSAGE = "message";
-    private static final String TYPE_SEARCHING_FOR_SATELLITE = "satellite";
+    public static final String TYPE_MESSAGE = "message";
+    public static final String TYPE_SEARCHING_FOR_SATELLITE = "satellite";
 
     private final JSONObject joSocketMessage;
 
@@ -58,6 +58,10 @@ public class SocketMessage {
 
     public SocketMessage(final String message, final String empId) throws IOException, JSONException {
         this(message, false, empId, TYPE_MESSAGE, null, null);
+    }
+
+    public SocketMessage(final String message, final boolean isError, final String empId, final String type) throws IOException, JSONException {
+        this(message, isError, empId, type, null, null);
     }
 
     public SocketMessage(final String message, boolean isError, final String empId) throws IOException, JSONException {

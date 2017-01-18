@@ -2,18 +2,14 @@ package com.theah64.ets.services;
 
 import android.app.Service;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.theah64.ets.model.SocketMessage;
-import com.theah64.ets.services.firebase.LocationRequestReceiverService;
 import com.theah64.ets.utils.APIRequestBuilder;
 import com.theah64.ets.utils.APIRequestGateway;
 import com.theah64.ets.utils.APIResponse;
@@ -22,15 +18,11 @@ import com.theah64.ets.utils.OkHttpUtils;
 import com.theah64.ets.utils.PermissionUtils;
 import com.theah64.ets.utils.WebSocketHelper;
 
-import org.java_websocket.client.WebSocketClient;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 import okhttp3.Call;
@@ -59,14 +51,18 @@ public class LocationReporterService extends Service implements LocationListener
         return START_STICKY;
     }
 
-    private void sendSocketMessage(String text, boolean isError) {
+    private void sendSocketMessage(String text, boolean isError, String type) {
         try {
-            final SocketMessage message = new SocketMessage(text, isError, empId);
+            final SocketMessage message = new SocketMessage(text, isError, empId, type);
             WebSocketHelper.getInstance(this).send(message);
         } catch (URISyntaxException | IOException | JSONException e) {
             e.printStackTrace();
         }
 
+    }
+
+    private void sendSocketMessage(String text, boolean isError) {
+        sendSocketMessage(text, isError, SocketMessage.TYPE_MESSAGE);
     }
 
     @Override
@@ -81,7 +77,7 @@ public class LocationReporterService extends Service implements LocationListener
 
         final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            sendSocketMessage("Searching for satellites...", false);
+            sendSocketMessage("Searching for satellites...", false, SocketMessage.TYPE_SEARCHING_FOR_SATELLITE);
             locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, null);
         } else {
             sendSocketMessage("GPS not enabled", false);
