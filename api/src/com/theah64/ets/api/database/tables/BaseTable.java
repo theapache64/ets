@@ -98,6 +98,36 @@ public class BaseTable<T> {
 
     }
 
+    public void update(String whereColumn, String whereColumnValue, String whereColumn2, String whereColumnValue2, String updateColumn, String newUpdateColumnValue) throws UpdateFailedException {
+        boolean isEdited = false;
+        final String query = String.format("UPDATE %s SET %s = ? WHERE %s = ? AND %s = ?;", tableName, updateColumn, whereColumn, whereColumn2);
+        final java.sql.Connection con = Connection.getConnection();
+
+        try {
+            final PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, newUpdateColumnValue);
+            ps.setString(2, whereColumnValue);
+            ps.setString(3, whereColumnValue2);
+
+            isEdited = ps.executeUpdate() == 1;
+            ps.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (!isEdited) {
+            throw new UpdateFailedException("Failed to update " + updateColumn);
+        }
+
+    }
+
     public T get(final String column1, final String value1, final String column2, final String value2) {
         throw new IllegalArgumentException(ERROR_MESSAGE_UNDEFINED_METHOD);
     }
@@ -266,6 +296,22 @@ public class BaseTable<T> {
 
 
         return jaFcmIds;
+    }
+
+    public boolean delete(final String column1, final String value1, final String column2, final String value2) {
+        boolean isDeleted = false;
+        final String query = String.format("DELETE FROM %s WHERE %s = ? AND %s = ?;", tableName, column1, column2);
+        final java.sql.Connection con = Connection.getConnection();
+        try {
+            final PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, value1);
+            ps.setString(2, value2);
+            isDeleted = ps.executeUpdate() > 0;
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isDeleted;
     }
 
 }

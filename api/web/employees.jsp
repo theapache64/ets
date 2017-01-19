@@ -21,8 +21,27 @@
             $("a.showEmpLocation").click(function () {
                 var empId = $(this).parent().parent().data("emp-id");
                 var url = "/location_history.jsp?emp_id=" + empId;
-                console.log(url);
                 window.open(url, "_blank");
+            });
+
+            $("a.delEmp").click(function () {
+
+                if (confirm("Do you really want to delete the employee?")) {
+                    var empId = $(this).parent().parent().data("emp-id");
+                    window.location = "/delete_employee.jsp?emp_id=" + empId;
+                }
+
+            });
+
+
+            $("a.editEmp").click(function () {
+                var emp = $(this).parent().parent();
+                var empName = $(emp).data("emp-name");
+                var newName = prompt("Enter new name", empName);
+                if (newName != null) {
+                    var empId = $(emp).data("emp-id");
+                    window.location = "/change_employee_name.jsp?emp_id=" + empId + "&name=" + newName;
+                }
             });
 
         });
@@ -58,7 +77,7 @@
                             //Looping through each employee
                             for (final Employee employee : employees) {
                     %>
-                <tr data-emp-id="<%=employee.getId()%>">
+                <tr data-emp-name="<%=employee.getName()%>" data-emp-id="<%=employee.getId()%>">
                     <td><%=employee.getName()%>
                     </td>
                     <td>

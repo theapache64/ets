@@ -106,8 +106,6 @@
         });
 
         poly.setMap(map);
-
-
     }
 
 

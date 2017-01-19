@@ -103,17 +103,12 @@
 
                 var empDivId = "div#" + employeeId;
 
-                console.log(joResp.type);
-
                 if (joData.type == 'location') {
 
-                    //Removing old pin
-                    console.log("empId: " + employeeId);
-                    console.log("markers: " + markers.length);
-                    console.log(markers[employeeId]);
 
-                    //markers[employeeId].infowindow.close();
-                    markers[employeeId].setMap(null);
+                    if(markers[employeeId]){
+                        markers[employeeId].setMap(null);
+                    }
 
                     var name = $(empDivId).data("name");
                     lat = joData.lat;
@@ -260,33 +255,33 @@
             var lat = $(employees[i]).data("lat");
             var lon = $(employees[i]).data("lon");
 
-            if (!lat || !lon) {
-                console.log("no location found for " + name);
-                continue;
+            var gLatLon;
+            if (lat && lon) {
+
+                gLatLon = new google.maps.LatLng(lat, lon);
+                var marker = new google.maps.Marker({
+                    position: gLatLon,
+                    animation: google.maps.Animation.DROP
+                });
+
+                marker.setMap(map);
+
+                var lastSeen = $(employees[i]).data("last-seen");
+
+                //Setting marker
+
+                //Building info window with employee name
+                var infoWindow = new google.maps.InfoWindow(
+                    {
+                        content: name + " - (" + lastSeen + ")"
+                    }
+                );
+
+                //Showing info window
+                infoWindow.open(map, marker);
+
+                setMarketListener(marker);
             }
-
-            var lastSeen = $(employees[i]).data("last-seen");
-
-            //Setting marker
-            var gLatLon = new google.maps.LatLng(lat, lon);
-            var marker = new google.maps.Marker({
-                position: gLatLon,
-                animation: google.maps.Animation.DROP
-            });
-
-            marker.setMap(map);
-
-            //Building info window with employee name
-            var infoWindow = new google.maps.InfoWindow(
-                {
-                    content: name + " - (" + lastSeen + ")"
-                }
-            );
-
-            //Showing info window
-            infoWindow.open(map, marker);
-
-            setMarker(marker);
 
             //Saving marker
             var empId = $(employees[i]).attr("id");
@@ -301,10 +296,15 @@
 
             poly.setMap(map);
             locations[empId] = poly;
+
+            if(gLatLon){
+                poly.getPath().push(gLatLon);
+            }
+
         }
 
 
-        function setMarker(marker) {
+        function setMarketListener(marker) {
 
             //Click on zoom
             google.maps.event.addListener(marker, 'click', function () {
