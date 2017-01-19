@@ -34,7 +34,7 @@ public class ReportLocationServlet extends AdvancedBaseServlet {
         final String lon = getStringParameter(LocationHistories.COLUMN_LONGITUDE);
         final String deviceTime = getStringParameter(LocationHistories.COLUMN_DEVICE_TIME);
 
-        LocationHistories.getInstance().add(new Location(empId, lat, lon, deviceTime));
+        LocationHistories.getInstance().add(new Location(null, empId, lat, lon, deviceTime));
 
         //success
         getWriter().write(new APIResponse("Location reported", null).getResponse());

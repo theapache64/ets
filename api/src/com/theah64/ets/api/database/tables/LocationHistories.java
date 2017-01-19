@@ -6,6 +6,8 @@ import com.theah64.ets.api.models.Location;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by theapache64 on 19/11/16,2:58 PM.
@@ -74,7 +76,7 @@ public class LocationHistories extends BaseTable<Location> {
                 final String lon = rs.getString(COLUMN_LONGITUDE);
                 final String deviceTime = rs.getString(COLUMN_DEVICE_TIME);
 
-                location = new Location(null, lat, lon, deviceTime);
+                location = new Location(null, null, lat, lon, deviceTime);
             }
 
             rs.close();
@@ -90,6 +92,45 @@ public class LocationHistories extends BaseTable<Location> {
             }
         }
         return location;
+    }
+
+    @Override
+    public List<Location> getAll(String whereColumn, String whereColumnValue) {
+        List<Location> locations = null;
+        final String query = String.format("SELECT id,lat,lon,device_time FROM location_histories WHERE %s = ? ORDER BY id DESC;", whereColumn);
+        final java.sql.Connection con = Connection.getConnection();
+        try {
+            final PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, whereColumnValue);
+
+            final ResultSet rs = ps.executeQuery();
+
+            if (rs.first()) {
+                locations = new ArrayList<>();
+
+                do {
+                    final String id = rs.getString(COLUMN_ID);
+                    final String lat = rs.getString(COLUMN_LATITUDE);
+                    final String lon = rs.getString(COLUMN_LONGITUDE);
+                    final String deviceTime = rs.getString(COLUMN_DEVICE_TIME);
+
+                    locations.add(new Location(id, null, lat, lon, deviceTime));
+                } while (rs.next());
+            }
+
+            rs.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return locations;
     }
 }
 
