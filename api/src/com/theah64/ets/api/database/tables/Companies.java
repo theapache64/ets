@@ -17,6 +17,7 @@ public class Companies extends BaseTable<Company> {
     public static final String COLUMN_CODE = "code";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_PASSWORD = "password";
+    public static final String KEY_C_PASSWORD = "cpassword";
 
     private Companies() {
         super("companies");
@@ -39,9 +40,9 @@ public class Companies extends BaseTable<Company> {
         final boolean isSingleModeQuery = column2 == null || value2 == null;
 
         if (isSingleModeQuery) {
-            query = String.format("SELECT id,name,code,is_active FROM companies WHERE %s = ?;", column1);
+            query = String.format("SELECT id,password,name,code,is_active FROM companies WHERE %s = ?;", column1);
         } else {
-            query = String.format("SELECT id,name,code,is_active FROM companies WHERE %s = ? AND %s = ?;", column1, column2);
+            query = String.format("SELECT id,password,name,code,is_active FROM companies WHERE %s = ? AND %s = ?;", column1, column2);
         }
 
         final java.sql.Connection con = Connection.getConnection();
@@ -59,11 +60,12 @@ public class Companies extends BaseTable<Company> {
 
             if (rs.first()) {
                 final String id = rs.getString(COLUMN_ID);
+                final String password = rs.getString(COLUMN_PASSWORD);
                 final String name = rs.getString(COLUMN_NAME);
                 final String code = rs.getString(COLUMN_CODE);
                 final boolean isActive = rs.getBoolean(COLUMN_IS_ACTIVE);
 
-                company = new Company(id, name, code, isActive);
+                company = new Company(id, name, code, password, isActive);
             }
 
             rs.close();

@@ -1,4 +1,6 @@
+<%@ page import="com.theah64.ets.api.database.tables.Employees" %>
 <%@ page import="com.theah64.ets.api.database.tables.LocationHistories" %>
+<%@ page import="com.theah64.ets.api.models.Employee" %>
 <%@ page import="com.theah64.ets.api.models.Location" %>
 <%@ page import="java.util.List" %><%--
   Created by IntelliJ IDEA.
@@ -11,7 +13,19 @@
 <%@include file="signin_check.jsp" %>
 <html>
 <head>
-    <title>Location History</title>
+    <title>
+        <%
+            final String empId = request.getParameter("emp_id");
+            final Employee employee = Employees.getInstance().get(Employees.COLUMN_ID, empId);
+
+            if (employee == null) {
+                response.sendError(HttpServletResponse.SC_NO_CONTENT);
+                return;
+            }
+
+        %>
+
+        <%=employee.getName()%> - Location History</title>
     <%@include file="common_headers.jsp" %>
     <script>
         $(document).ready(function () {
@@ -31,10 +45,8 @@
 <script>
     function initMap() {
 
-        var dubai = new google.maps.LatLng(25.276987, 55.296249);
         var mapCanvas = document.getElementById("map");
         var mapOptions = {
-            center: dubai,
             zoom: 10
         };
 
@@ -50,34 +62,44 @@
         var gLatLon = new google.maps.LatLng(<%=location.getLat()+","+location.getLon()%>);
         locations.push(gLatLon);
 
-        var marker<%=location.getId()%> = new google.maps.Marker({
-            position: gLatLon,
-            animation: google.maps.Animation.DROP
-        });
 
-        marker<%=location.getId()%>.setMap(map);
-
-        google.maps.event.addListener(marker<%=location.getId()%>, 'click', function() {
-
-            var infowindow<%=location.getId()%> = new google.maps.InfoWindow({
-                content:"<%=location.getDeviceTime()%>"
-            });
-
-            infowindow<%=location.getId()%>.open(map,marker<%=location.getId()%>);
-        });
+        addInfoWindow(gLatLon, "<%=location.getDeviceTime()%>");
 
         //Creating point
 
         <%
     }
+
 }
 %>
 
+        function addInfoWindow(gLatLon, deviceTime) {
+
+            var marker = new google.maps.Marker({
+                position: gLatLon,
+                animation: google.maps.Animation.DROP
+            });
+
+            marker.setMap(map);
+
+            var infowindow = new google.maps.InfoWindow({
+                content: deviceTime
+            });
+
+
+            google.maps.event.addListener(marker, 'click', function () {
+
+                infowindow.open(map, marker);
+            });
+        }
+
         //moving map to last known location
         map.panTo(locations[0]);
+        //TODO: Add zoom level
+
 
         var poly = new google.maps.Polyline({
-            path : locations,
+            path: locations,
             strokeColor: '#000000',
             strokeOpacity: 1.0,
             strokeWeight: 2

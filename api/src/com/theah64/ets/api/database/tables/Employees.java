@@ -99,7 +99,7 @@ public class Employees extends BaseTable<Employee> {
     @Override
     public Employee get(String column1, String value1) {
         Employee emp = null;
-        final String query = String.format("SELECT id, fcm_id, api_key,is_active FROM employees WHERE %s = ?", column1);
+        final String query = String.format("SELECT id,name, fcm_id, api_key,is_active FROM employees WHERE %s = ?", column1);
         final java.sql.Connection con = Connection.getConnection();
         try {
             final PreparedStatement ps = con.prepareStatement(query);
@@ -110,11 +110,12 @@ public class Employees extends BaseTable<Employee> {
 
             if (rs.first()) {
                 final String id = rs.getString(COLUMN_ID);
+                final String name = rs.getString(COLUMN_NAME);
                 final String fcmId = rs.getString(COLUMN_FCM_ID);
                 final String apiKey = rs.getString(COLUMN_API_KEY);
                 final boolean isActive = rs.getBoolean(COLUMN_IS_ACTIVE);
 
-                emp = new Employee(id, null, null, null, fcmId, apiKey, null, null, null, isActive);
+                emp = new Employee(id, name, null, null, fcmId, apiKey, null, null, null, isActive);
             }
 
             rs.close();
