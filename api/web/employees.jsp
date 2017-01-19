@@ -20,7 +20,7 @@
 
             $("a.showEmpLocation").click(function () {
                 var empId = $(this).parent().parent().data("emp-id");
-                var url = "/location_history.jsp?emp_id=" + empId;
+                var url = "location_history.jsp?emp_id=" + empId;
                 window.open(url, "_blank");
             });
 
@@ -28,7 +28,7 @@
 
                 if (confirm("Do you really want to delete the employee?")) {
                     var empId = $(this).parent().parent().data("emp-id");
-                    window.location = "/delete_employee.jsp?emp_id=" + empId;
+                    window.location = "delete_employee.jsp?emp_id=" + empId;
                 }
 
             });
@@ -40,7 +40,7 @@
                 var newName = prompt("Enter new name", empName);
                 if (newName != null) {
                     var empId = $(emp).data("emp-id");
-                    window.location = "/change_employee_name.jsp?emp_id=" + empId + "&name=" + newName;
+                    window.location = "change_employee_name.jsp?emp_id=" + empId + "&name=" + newName;
                 }
             });
 
