@@ -11,9 +11,9 @@ Employee Tracking System is an android project developed to track android device
 
 	- employees.jsp
 		- Edit
-		- Delete
-		- View recent locations in a single map
-	- Change password
+		- Delete 
+		- View recent locations in a single map (OKAY)
+	- Change password (OKAY)
 
 - Android app
 
