@@ -95,7 +95,7 @@
 
         //moving map to last known location
         map.panTo(locations[0]);
-        //TODO: Add zoom level
+        map.setZoom(12);
 
 
         var poly = new google.maps.Polyline({

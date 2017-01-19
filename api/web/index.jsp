@@ -62,9 +62,6 @@
 
             $("div.employee").click(function () {
 
-                var empId = $(this).attr("id");
-                window.open("/location_history.jsp?emp_id=" + empId, "_blank");
-
                 var lat = $(this).data("lat");
                 var lon = $(this).data("lon");
 

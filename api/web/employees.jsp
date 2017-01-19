@@ -17,7 +17,14 @@
 
     <script>
         $(document).ready(function () {
-            alert("loaded");
+
+            $("a.showEmpLocation").click(function () {
+                var empId = $(this).parent().parent().data("emp-id");
+                var url = "/location_history.jsp?emp_id=" + empId;
+                console.log(url);
+                window.open(url, "_blank");
+            });
+
         });
     </script>
 
