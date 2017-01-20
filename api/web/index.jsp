@@ -144,11 +144,6 @@
                     poly.push(gLatLon);
                 }
 
-                if (joData.type == 'satellite') {
-                    $(empDivId).find("p.employee_status").addClass("text-primary");
-                } else {
-                    $(empDivId).find("p.employee_status").removeClass("text-primary");
-                }
 
                 $(empDivId).find("p.employee_status").text(message);
             };
@@ -255,7 +250,6 @@
         console.log("Found " + employees.length + " employee(s)");
 
         for (var i = 0; i < employees.length; i++) {
-
 
             var name = $(employees[i]).data("name");
             var lat = $(employees[i]).data("lat");
