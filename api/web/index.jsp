@@ -144,11 +144,6 @@
                     poly.push(gLatLon);
                 }
 
-                if (joData.type == 'satellite') {
-                    $(empDivId).find("p.employee_status").addClass("text-primary");
-                } else {
-                    $(empDivId).find("p.employee_status").removeClass("text-primary");
-                }
 
                 $(empDivId).find("p.employee_status").text(message);
             };
