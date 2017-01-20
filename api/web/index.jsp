@@ -106,7 +106,7 @@
                 if (joData.type == 'location') {
 
 
-                    if(markers[employeeId]){
+                    if (markers[employeeId]) {
                         markers[employeeId].setMap(null);
                     }
 
@@ -142,6 +142,12 @@
                     //Adding location
                     var poly = locations[employeeId].getPath();
                     poly.push(gLatLon);
+                }
+
+                if (joData.type == 'satellite') {
+                    $(empDivId).find("p.employee_status").addClass("text-primary");
+                } else {
+                    $(empDivId).find("p.employee_status").removeClass("text-primary");
                 }
 
                 $(empDivId).find("p.employee_status").text(message);
@@ -297,7 +303,7 @@
             poly.setMap(map);
             locations[empId] = poly;
 
-            if(gLatLon){
+            if (gLatLon) {
                 poly.getPath().push(gLatLon);
             }
 
