@@ -28,7 +28,8 @@ public class WebSocketHelper {
 
     private static final String X = WebSocketHelper.class.getSimpleName();
     private static WebSocketHelper instance;
-    private static final String ETS_SOCKET_URL_FORMAT = App.IS_DEBUG_MODE ? "ws://192.168.43.234:8080/v1/ets_socket/%s" : "ws://employeetrackingsystem.xyz:8080/ets/v1/ets_socket/%s";
+
+    private static final String ETS_SOCKET_URL_FORMAT = App.IS_DEBUG_MODE ? "ws://192.168.0.13:8080/v1/ets_socket/%s" : "ws://employeetrackingsystem.xyz:8080/ets/v1/ets_socket/%s";
 
     private final WebSocketClient webSocketClient;
     private Context context;
