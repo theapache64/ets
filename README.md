@@ -8,6 +8,7 @@ Employee Tracking System is an android project developed to track android device
 		- View last location on google map tab (OKAY)
 		- Point drawing (OKAY)
 		- Status color 
+		- Device online delay
 
 	- employees.jsp
 		- Edit (OKAY)

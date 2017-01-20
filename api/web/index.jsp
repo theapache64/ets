@@ -251,7 +251,6 @@
 
         for (var i = 0; i < employees.length; i++) {
 
-
             var name = $(employees[i]).data("name");
             var lat = $(employees[i]).data("lat");
             var lon = $(employees[i]).data("lon");
