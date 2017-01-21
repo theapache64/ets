@@ -134,9 +134,7 @@ public class APIRequestGateway implements PermissionUtils.Callback {
 
                 } catch (JSONException | APIResponse.APIException e) {
                     e.printStackTrace();
-
                     callback.onFailed(e.getMessage());
-
                 }
             }
         });
