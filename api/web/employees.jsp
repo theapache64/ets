@@ -44,6 +44,14 @@
                 }
             });
 
+            $("a.delHistory").click(function () {
+                if (confirm("Do you really want to clear the history?")) {
+                    var emp = $(this).parent().parent();
+                    var empId = $(emp).data("emp-id");
+                    window.location = "clear_history.jsp?emp_id=" + empId;
+                }
+            });
+
         });
     </script>
 
@@ -90,6 +98,10 @@
                         <a type="button" class="btn btn-default editEmp"><span
                                 class="glyphicon glyphicon-pencil"></span>
                         </a>
+                        <a type="button" class="btn btn-default delHistory"><span
+                                class="glyphicon glyphicon-flash"></span>
+                        </a>
+
                         <a type="button" class="btn btn-default delEmp"><span class="glyphicon glyphicon-remove"></span>
                         </a>
                     </td>

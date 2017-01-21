@@ -22,12 +22,15 @@
         var map;
         var markers = [];
         var locations = [];
+        var isDeviceResponded = [];
 
         $(document).ready(function () {
 
             $("div.employee button").click(function (e) {
 
                 //Sending location request
+                var empId = $(this).parent().attr("id");
+                console.log("empId: "+ empId);
                 var empCode = $(this).data("emp-code");
 
                 //Changing status
@@ -43,7 +46,16 @@
                     },
                     success: function (data, status) {
                         if (!data.error) {
+                            isDeviceResponded[empId] = false;
                             $(pEmpStatus).text("Location request sent");
+
+                            setTimeout(function () {
+                                console.log("isDeviceResponded: " + isDeviceResponded[empId]);
+                                if (!isDeviceResponded[empId]) {
+                                    $(pEmpStatus).text("Device OFFLINE");
+                                }
+                            }, 3000);
+
                         } else {
                             $(pEmpStatus).text(data.message);
                         }
@@ -100,6 +112,7 @@
 
                 var joData = joResp.data;
                 var employeeId = joData.employee_id;
+                isDeviceResponded[employeeId] = true;
 
                 var empDivId = "div#" + employeeId;
 

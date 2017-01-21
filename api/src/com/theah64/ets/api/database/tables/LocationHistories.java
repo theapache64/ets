@@ -132,5 +132,27 @@ public class LocationHistories extends BaseTable<Location> {
         }
         return locations;
     }
+
+    public boolean delete(String employeeId, String companyId) {
+        boolean isDeleted = false;
+        final String query = "DELETE lh.* FROM location_histories lh INNER JOIN companies c ON c.id = ? WHERE lh.employee_id = ?";
+        final java.sql.Connection con = Connection.getConnection();
+        try {
+            final PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, companyId);
+            ps.setString(2, employeeId);
+            isDeleted = ps.executeUpdate() > 0;
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isDeleted;
+    }
 }
 

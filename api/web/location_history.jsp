@@ -43,6 +43,11 @@
 </div>
 
 <script>
+
+    const TYPE_LOCATION_FIRST = 1;
+    const TYPE_LOCATION_LAST = 2;
+    const TYPE_LOCATION_NORMAL = 3;
+
     function initMap() {
 
         var mapCanvas = document.getElementById("map");
@@ -57,28 +62,42 @@
         <%
             final List<Location> locations = LocationHistories.getInstance().getAll(LocationHistories.COLUMN_EMPLOYEE_ID, request.getParameter("emp_id"));
             if(locations!=null){
-                for(final Location location : locations){
+                for(int i=0;i<locations.size();i++){
+                    final Location location = locations.get(i);
                     %>
         var gLatLon = new google.maps.LatLng(<%=location.getLat()+","+location.getLon()%>);
         locations.push(gLatLon);
 
 
-        addInfoWindow(gLatLon, "<%=location.getDeviceTime()%>");
+        addInfoWindow(gLatLon, "<%=location.getDeviceTime()%>", getLocationIcon(<%=i+","+locations.size()%>), <%=i==0 ? "true" : "false"%>);
 
-        //Creating point
+        function getLocationIcon(current, total) {
+            if (current == 0) {
+                return "assets/map_current.png";
+            } else if (current == (total - 1)) {
+                return "assets/map_first.png";
+            } else {
+                return null;
+            }
+        }
 
         <%
     }
 
+}else{
+                response.sendRedirect("error.jsp?title=No history&message=No history found for the selected employee");
 }
 %>
 
-        function addInfoWindow(gLatLon, deviceTime) {
+        function addInfoWindow(gLatLon, deviceTime, icon, isFirstLocation) {
+
 
             var marker = new google.maps.Marker({
                 position: gLatLon,
+                icon: icon,
                 animation: google.maps.Animation.DROP
             });
+
 
             marker.setMap(map);
 
@@ -86,11 +105,13 @@
                 content: deviceTime
             });
 
-
             google.maps.event.addListener(marker, 'click', function () {
-
                 infowindow.open(map, marker);
             });
+
+            if (isFirstLocation) {
+                infowindow.open(map, marker);
+            }
         }
 
         //moving map to last known location
