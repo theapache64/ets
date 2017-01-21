@@ -3,7 +3,6 @@ package com.theah64.ets.asyncs;
 import android.content.Context;
 import android.util.Log;
 
-
 import com.theah64.ets.model.Employee;
 import com.theah64.ets.model.SocketMessage;
 import com.theah64.ets.utils.APIRequestBuilder;
@@ -38,12 +37,17 @@ public class FCMSynchronizer extends BaseJSONPostNetworkAsyncTask<Void> {
         final PrefUtils prefUtils = PrefUtils.getInstance(context);
         this.newFcmId = prefUtils.getString(Employee.KEY_FCM_ID);
         this.isFCMSynced = prefUtils.getBoolean(Employee.KEY_IS_FCM_SYNCED);
+
+        Log.d(X, "Started");
     }
 
     @Override
     protected synchronized Void doInBackground(String... strings) {
 
         if (newFcmId != null && !isFCMSynced) {
+
+            Log.d(X, "Updating...");
+
             new APIRequestGateway(getContext(), new APIRequestGateway.APIRequestGatewayCallback() {
                 @Override
                 public void onReadyToRequest(String apiKey, final String id) {
@@ -73,6 +77,7 @@ public class FCMSynchronizer extends BaseJSONPostNetworkAsyncTask<Void> {
                                         .commit();
 
                                 try {
+                                    Log.d(X, "FCM Synced");
                                     WebSocketHelper.getInstance(getContext()).send(new SocketMessage("FCM Synced", id));
                                 } catch (URISyntaxException | IOException | JSONException e) {
                                     e.printStackTrace();

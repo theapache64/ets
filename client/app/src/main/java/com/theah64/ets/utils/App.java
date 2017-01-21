@@ -11,13 +11,10 @@ import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.HttpSender;
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
@@ -42,7 +39,7 @@ import java.net.URISyntaxException;
 )
 public class App extends Application {
 
-    public static final boolean IS_DEBUG_MODE = true;
+    public static final boolean IS_DEBUG_MODE = false;
     private static final String X = App.class.getSimpleName();
 
     private static String companyId, companyCode;
@@ -90,7 +87,7 @@ public class App extends Application {
 
     }
 
-    public static String getCompanyCode() throws IOException, JSONException {
+    public static String getCompanyCode() {
         return companyCode;
     }
 }

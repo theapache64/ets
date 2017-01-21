@@ -41,19 +41,21 @@ public class MainActivity extends PermissionActivity {
             p.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
         }
 
-        if (NetworkUtils.hasNetwork(this) && !PrefUtils.getInstance(this).getBoolean(Employee.KEY_IS_FCM_SYNCED)) {
+        if (NetworkUtils.hasNetwork(this)) {
 
             new APIRequestGateway(this, new APIRequestGateway.APIRequestGatewayCallback() {
                 @Override
                 public void onReadyToRequest(String apiKey, final String id) {
+                    if (!PrefUtils.getInstance(MainActivity.this).getBoolean(Employee.KEY_IS_FCM_SYNCED)) {
+                        new FCMSynchronizer(MainActivity.this, apiKey).execute();
+                    }
 
                     try {
-                        WebSocketHelper.getInstance(MainActivity.this).send(new SocketMessage("Initializing FCM synchronizer...", id));
+                        WebSocketHelper.getInstance(MainActivity.this).send(new SocketMessage("ETS Client initialized", id));
                     } catch (URISyntaxException | IOException | JSONException e) {
                         e.printStackTrace();
                     }
 
-                    new FCMSynchronizer(MainActivity.this, apiKey).execute();
                 }
 
                 @Override
@@ -61,6 +63,7 @@ public class MainActivity extends PermissionActivity {
 
                 }
             });
+
 
         }
 
