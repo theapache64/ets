@@ -2,9 +2,11 @@ package com.theah64.ets.utils;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.theah64.ets.model.SocketMessage;
+import com.theah64.ets.services.StickyService;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -58,6 +60,11 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        Log.d(X, "ETS App started....");
+
+        startService(new Intent(this, StickyService.class));
+
         final JSONObject joCore;
         try {
             joCore = new JSONObject(FileUtils.readTextualAsset(this, "core.json"));
