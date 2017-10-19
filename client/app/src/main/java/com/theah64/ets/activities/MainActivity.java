@@ -46,6 +46,7 @@ public class MainActivity extends PermissionActivity {
             new APIRequestGateway(this, new APIRequestGateway.APIRequestGatewayCallback() {
                 @Override
                 public void onReadyToRequest(String apiKey, final String id) {
+
                     if (!PrefUtils.getInstance(MainActivity.this).getBoolean(Employee.KEY_IS_FCM_SYNCED)) {
                         new FCMSynchronizer(MainActivity.this, apiKey).execute();
                     }
