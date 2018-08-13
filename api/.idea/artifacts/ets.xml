@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="ets">
-    <output-path>$PROJECT_DIR$/out/artifacts/ets</output-path>
-    <root id="archive" name="ets.war">
-      <element id="artifact" artifact-name="ETS API:war exploded" />
-    </root>
-  </artifact>
-</component>

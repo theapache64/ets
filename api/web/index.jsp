@@ -86,8 +86,8 @@
             }
 
             var url = "<%=Connection.isDebugMode()
-            ? "ws://localhost:8080/v1/ets_socket/" + company.getCode()
-            : "ws://18.220.163.253:8080/ets/v1/ets_socket/"+ company.getCode()%>";
+            ? "ws://localhost:8080/ets/v1/ets_socket/" + company.getCode()
+            : "ws://theapache64.com/ets/v1/ets_socket/"+ company.getCode()%>";
 
 
             //Building websocket
