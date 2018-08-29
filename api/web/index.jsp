@@ -1,6 +1,7 @@
 <%@ page import="com.theah64.ets.api.database.tables.Employees" %>
 <%@ page import="com.theah64.ets.api.models.Employee" %>
 <%@ page import="com.theah64.ets.api.models.Location" %>
+<%@ page import="com.theah64.ets.api.utils.SecretConstants" %>
 <%@ page import="java.util.List" %>
 <%--
   Created by IntelliJ IDEA.
@@ -30,7 +31,7 @@
 
                 //Sending location request
                 var empId = $(this).parent().attr("id");
-                console.log("empId: "+ empId);
+                console.log("empId: " + empId);
                 var empCode = $(this).data("emp-code");
 
                 //Changing status
@@ -38,7 +39,7 @@
                 $(pEmpStatus).text("Requesting for new location...");
 
                 $.ajax({
-                    url: '<%=Connection.isDebugMode()? "/v1/request_location" : "/ets/v1/request_location" %>',
+                    url: '/ets/v1/request_location',
                     type: 'GET',
                     data: {
                         id: <%=company.getId()%>,
@@ -329,6 +330,6 @@
     }
 
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCwmri1d59R8EH5zyXAw-BXRcEMFUtKjA4&callback=initMap"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<%=SecretConstants.GOOGLE_MAP_API_KEY%>&callback=initMap"></script>
 </body>
 </html>
