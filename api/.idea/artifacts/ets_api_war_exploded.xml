@@ -7,8 +7,6 @@
           <element id="module-output" name="ets_api" />
         </element>
         <element id="directory" name="lib">
-          <element id="library" level="application" name="json" />
-          <element id="library" level="application" name="mysql-connector-java-8.0.11" />
           <element id="library" level="application" name="websocket-api" />
         </element>
       </element>
