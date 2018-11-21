@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">ETS</string>
+    <string name="ACTIVATE">ACTIVATE</string>
+    <string name="Initializing">Initializing...</string>
+    <string name="All_permissions_must_be_accepted">All permissions must be accepted</string>
+    <string name="Press_below_button_to_start_activation">Press below button to start activation</string>
+    <string name="Activating">Activating...</string>
+    <string name="Finished">Finished</string>
+    <string name="Device_activation_finished">Device activation finished.</string>
+    <string name="CLOSE_APP">CLOSE APP</string>
+    <string name="Network_error">Network error</string>
+    <string name="Waiting_for_permissions">Waiting for permissions</string>
+    <string name="Syncing_FCM">Syncing FCM...</string>
+    <string name="Ready_to_Request">Ready to Request</string>
 </resources>

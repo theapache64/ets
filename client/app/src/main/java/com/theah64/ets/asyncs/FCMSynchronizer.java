@@ -1,8 +1,10 @@
 package com.theah64.ets.asyncs;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.theah64.ets.callbacks.AsyncCallback;
 import com.theah64.ets.model.Employee;
 import com.theah64.ets.model.SocketMessage;
 import com.theah64.ets.utils.APIRequestBuilder;
@@ -31,6 +33,8 @@ public class FCMSynchronizer extends BaseJSONPostNetworkAsyncTask<Void> {
     private static final String X = FCMSynchronizer.class.getSimpleName();
     private final String newFcmId;
     private final boolean isFCMSynced;
+    private static @Nullable
+    AsyncCallback callback;
 
     public FCMSynchronizer(Context context, String apiKey) {
         super(context, apiKey);
@@ -41,6 +45,10 @@ public class FCMSynchronizer extends BaseJSONPostNetworkAsyncTask<Void> {
         Log.d(X, "Started");
     }
 
+    public static void setCallback(@Nullable AsyncCallback callback) {
+        FCMSynchronizer.callback = callback;
+    }
+
     @Override
     protected synchronized Void doInBackground(String... strings) {
 
@@ -48,53 +56,77 @@ public class FCMSynchronizer extends BaseJSONPostNetworkAsyncTask<Void> {
 
             Log.d(X, "Updating...");
 
-            new APIRequestGateway(getContext(), new APIRequestGateway.APIRequestGatewayCallback() {
-                @Override
-                public void onReadyToRequest(String apiKey, final String id) {
+            if (callback != null) {
+                callback.onAsyncStarted();
+                callback.onAsyncMessage("Synchronizing firebase token...");
+            }
 
-                    try {
-                        WebSocketHelper.getInstance(getContext()).send(new SocketMessage("Syncing FCM", id));
-                    } catch (URISyntaxException | IOException | JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    final Request fcmUpdateRequest = new APIRequestBuilder("/update_fcm", apiKey)
-                            .addParam(Employee.KEY_FCM_ID, newFcmId)
-                            .build();
-
-                    OkHttpUtils.getInstance().getClient().newCall(fcmUpdateRequest).enqueue(new Callback() {
+            new APIRequestGateway(getContext(),
+                    new APIRequestGateway.APIRequestGatewayCallback() {
                         @Override
-                        public void onFailure(Call call, IOException e) {
-                            e.printStackTrace();
+                        public void onReadyToRequest(String apiKey, final String id) {
+
+                            try {
+                                WebSocketHelper.getInstance(getContext()).send(new SocketMessage("Syncing FCM", id));
+                            } catch (URISyntaxException | IOException | JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            final Request fcmUpdateRequest = new APIRequestBuilder("/update_fcm", apiKey)
+                                    .addParam(Employee.KEY_FCM_ID, newFcmId)
+                                    .build();
+
+                            OkHttpUtils.getInstance().getClient().newCall(fcmUpdateRequest).enqueue(new Callback() {
+                                @Override
+                                public void onFailure(Call call, IOException e) {
+                                    e.printStackTrace();
+                                    if (callback != null) {
+                                        callback.onAsyncFailed(e.getMessage());
+                                    }
+                                }
+
+                                @Override
+                                public void onResponse(Call call, Response response) throws IOException {
+                                    try {
+                                        new APIResponse(OkHttpUtils.logAndGetStringBody(response));
+
+                                        PrefUtils.getInstance(getContext()).getEditor()
+                                                .putBoolean(Employee.KEY_IS_FCM_SYNCED, true)
+                                                .commit();
+
+                                        if (callback != null) {
+                                            callback.onAsyncSuccess();
+                                        }
+
+                                        try {
+                                            Log.d(X, "FCM Synced");
+                                            WebSocketHelper.getInstance(getContext()).send(new SocketMessage("FCM Synced", id));
+                                        } catch (URISyntaxException | IOException | JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    } catch (JSONException | APIResponse.APIException e) {
+                                        e.printStackTrace();
+                                        if (callback != null) {
+                                            callback.onAsyncFailed(e.getMessage());
+                                        }
+                                    }
+                                }
+                            });
+
                         }
 
                         @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            try {
-                                new APIResponse(OkHttpUtils.logAndGetStringBody(response));
-                                PrefUtils.getInstance(getContext()).getEditor()
-                                        .putBoolean(Employee.KEY_IS_FCM_SYNCED, true)
-                                        .commit();
-
-                                try {
-                                    Log.d(X, "FCM Synced");
-                                    WebSocketHelper.getInstance(getContext()).send(new SocketMessage("FCM Synced", id));
-                                } catch (URISyntaxException | IOException | JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            } catch (JSONException | APIResponse.APIException e) {
-                                e.printStackTrace();
+                        public void onFailed(String reason) {
+                            Log.e(X, "Failed to update fcm : " + reason);
+                            if (callback != null) {
+                                callback.onAsyncFailed(reason);
                             }
                         }
                     });
-
-                }
-
-                @Override
-                public void onFailed(String reason) {
-                    Log.e(X, "Failed to update fcm : " + reason);
-                }
-            });
+        } else {
+            if (callback != null) {
+                callback.onAsyncMessage("Already synced");
+            }
         }
 
         return null;
